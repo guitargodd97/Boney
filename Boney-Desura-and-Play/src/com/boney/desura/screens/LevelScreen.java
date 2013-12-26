@@ -442,6 +442,7 @@ public class LevelScreen implements Screen {
 		data[1] = boney.getCash();
 		data[2] = level;
 		data[3] = stageNum;
+		data[4] = waveIndex;
 		return data;
 	}
 

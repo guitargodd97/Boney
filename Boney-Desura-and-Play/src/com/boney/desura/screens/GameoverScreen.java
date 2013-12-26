@@ -47,7 +47,7 @@ public class GameoverScreen implements Screen {
 	Sprite background;
 	private BitmapFont fontW;
 	private Music song;
-	int score, level, stageNum;
+	int score, level, stageNum, dogNum;
 	double cash;
 	boolean levelCompleted;
 	private TextureAtlas atlas, buttAtlas;
@@ -74,6 +74,7 @@ public class GameoverScreen implements Screen {
 		cash = data[1];
 		level = (int) data[2];
 		stageNum = (int) data[3];
+		dogNum = (int) data[4];
 		buttonWidth = 200;
 		buttonHeight = 75;
 		buttonY = 15;
@@ -151,16 +152,27 @@ public class GameoverScreen implements Screen {
 			}
 		});
 
-		if (levelCompleted)
-			label = new Label("Level: " + level + "." + stageNum + "\nPoints: "
-					+ score + " + " + ((level - 1) * 3000 + (500 * stageNum))
-					+ " = "
-					+ (score += ((level - 1) * 3000 + (500 * stageNum)))
-					+ "\nLEVEL COMPLETE!", ls);
-		else
-			label = new Label("Level: " + level + "." + stageNum + "\nPoints: "
-					+ score + "\nLevel failed......",
-					ls);
+		if (levelCompleted) {
+			if (stageNum <= 3)
+				label = new Label("Level: " + level + "." + stageNum
+						+ "\nPoints: " + score + " + "
+						+ ((level - 1) * 3000 + (500 * stageNum)) + " = "
+						+ (score += ((level - 1) * 3000 + (500 * stageNum)))
+						+ "\nLEVEL COMPLETE!", ls);
+			else
+				label = new Label("Dogs Dodged: " + dogNum + "\nPoints: "
+						+ score + " + "
+						+ ((level - 1) * 3000 + (500 * stageNum)) + " = "
+						+ (score += ((level - 1) * 3000 + (500 * stageNum)))
+						+ "\nLEVEL COMPLETE!", ls);
+		} else {
+			if (stageNum <= 3)
+				label = new Label("Level: " + level + "." + stageNum
+						+ "\nPoints: " + score + "\nLevel failed......", ls);
+			else
+				label = new Label("Dogs Dodged: " + dogNum + "\nPoints: "
+						+ score + "\nLevel failed......", ls);
+		}
 		label.setX(0);
 		label.setY(levelLocation.y + (levelSize.y / 2) - 35);
 		label.setWidth(width);
