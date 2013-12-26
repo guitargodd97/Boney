@@ -24,7 +24,7 @@ public class BoneyGame extends Game {
 	/// Variables
 
 	// Strings and Booleans
-	public static final String VERSION = "Ver. 1.0 Beta";
+	public static final String VERSION = "Ver. 1.1 Beta";
 	private static final String LOG = "Boney";
 	ApplicationType app;
 
