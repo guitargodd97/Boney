@@ -3,6 +3,7 @@ package com.boney.desura.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -42,7 +43,7 @@ public class MenuScreen implements Screen {
 	BoneyGame game;
 	Stage stage;
 	SpriteBatch batch;
-	TextButton startButton, quitButton, creditButton;
+	TextButton startButton, quitButton, creditButton, deleteButton;
 	Label label;
 
 	public MenuScreen(BoneyGame game) {
@@ -136,6 +137,28 @@ public class MenuScreen implements Screen {
 			}
 		});
 
+		deleteButton = new TextButton("Delete", tbStyle);
+		deleteButton.setWidth(buttonWidth - 45);
+		deleteButton.setHeight(buttonHeight - 35);
+		deleteButton.setX(5);
+		deleteButton.setY(quitButton.getY());
+		deleteButton.addListener(new InputListener() {
+			public boolean touchDown(InputEvent event, float x, float y,
+					int pointer, int button) {
+				return true;
+			}
+
+			public void touchUp(InputEvent event, float x, float y,
+					int pointer, int button) {
+				FileHandle saveLocation, cashLocation;
+				saveLocation = Gdx.files.local("data/stats.bin");
+				cashLocation = Gdx.files.local("data/money.txt");
+				saveLocation.writeBytes(new byte[] { 0, 1, 1, 1, 1, 1, 1, 1, 1,
+						0 }, false);
+				cashLocation.writeString("0", false);
+			}
+		});
+
 		LabelStyle ls = new LabelStyle(f, Color.WHITE);
 		label = new Label("Boney the Skeleton", ls);
 		label.setX(0);
@@ -145,6 +168,7 @@ public class MenuScreen implements Screen {
 		stage.addActor(startButton);
 		stage.addActor(creditButton);
 		stage.addActor(quitButton);
+		stage.addActor(deleteButton);
 		stage.addActor(label);
 	}
 
