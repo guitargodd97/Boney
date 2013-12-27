@@ -16,9 +16,14 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
@@ -53,12 +58,13 @@ public class LevelScreen implements Screen {
 	int waveIndex, level, stageNum, introBox, introState, boxWidth, boxHeight,
 			boxX, boxY;
 	int powerTimer, powerLimit;
+	int buttonWidth, buttonHeight, buttonY;
 	String introText[] = new String[5];
 	// Objects
 	SpriteBatch batch;
 	TextureAtlas background, boneySheet, dog, levelSheet;
 	BoneyGame game;
-	Stage stage;
+	Stage stage, pStage;
 	ShapeRenderer render;
 	Rectangle jumpRect, crouchRect;
 	Boney boney;
@@ -96,6 +102,10 @@ public class LevelScreen implements Screen {
 	private Label label, moneyLabel, pntLabel, pauseLabel, introLabel;
 	private int enterP, pP;
 	private boolean paused, survival;
+	TextButton startButton, quitButton;
+	private Skin skin;
+	private TextureAtlas buttAtlas;
+	private BitmapFont b;
 
 	// LevelScreen()
 	//
@@ -158,6 +168,9 @@ public class LevelScreen implements Screen {
 		boxHeight = (int) ((int) Gdx.graphics.getHeight() * 0.85);
 		boxX = (int) ((int) Gdx.graphics.getWidth() - boxWidth) / 2;
 		boxY = (int) ((int) Gdx.graphics.getHeight() - boxHeight) / 2;
+		buttonWidth = 200;
+		buttonHeight = 75;
+		buttonY = 15;
 	}
 
 	private GenericDog whichDog() {
@@ -261,13 +274,16 @@ public class LevelScreen implements Screen {
 			pntLabel.setText("Score: " + (int) score);
 			if (!boney.getLife())
 				gameover();
-			if (getKeyUp(Input.Keys.P))
+			if (getKeyUp(Input.Keys.P)) {
 				paused = true;
+				Gdx.input.setInputProcessor(pStage);
+			}
 			if (pP == 0 && Gdx.input.isKeyPressed(Input.Keys.P))
 				pP++;
 			else if (pP == 1 && !Gdx.input.isKeyPressed(Input.Keys.P))
 				pP++;
 		} else {
+			pauseLabel.draw(batch, 1);
 			if (getKeyUp(Input.Keys.P))
 				paused = false;
 			if (pP == 0 && Gdx.input.isKeyPressed(Input.Keys.P))
@@ -276,9 +292,15 @@ public class LevelScreen implements Screen {
 				pP++;
 		}
 		batch.end();
-		stage.act(delta);
+		if (!paused)
+			stage.act(delta);
+		else
+			pStage.act(delta);
 		batch.begin();
-		stage.draw();
+		if (!paused)
+			stage.draw();
+		else
+			pStage.draw();
 		batch.end();
 		render.begin(ShapeType.Filled);
 		for (int i = 0; i < boney.returnLives(); i++)
@@ -291,7 +313,13 @@ public class LevelScreen implements Screen {
 		if (stage == null)
 			stage = new Stage(width, height, true);
 		stage.clear();
-		Gdx.input.setInputProcessor(stage);
+		if (!paused)
+			Gdx.input.setInputProcessor(stage);
+		if (pStage == null)
+			pStage = new Stage(width, height, true);
+		pStage.clear();
+		if (paused)
+			Gdx.input.setInputProcessor(pStage);
 		LabelStyle ls = new LabelStyle(fontW, Color.WHITE);
 		if (!survival)
 			label = new Label("Stage: " + level + "." + stageNum + "\nDogs: "
@@ -319,19 +347,65 @@ public class LevelScreen implements Screen {
 		stage.addActor(moneyLabel);
 		stage.addActor(pntLabel);
 		pauseLabel = new Label(pause.getMessage(), ls);
-		pauseLabel.setY(boxY);
+		pauseLabel.setY(200);
 		pauseLabel.setWidth(width);
 		pauseLabel.setAlignment(Align.center);
 		introLabel = new Label(intro.updateIntro(), ls);
 		introLabel.setY(200);
 		introLabel.setWidth(width);
 		introLabel.setAlignment(Align.center);
+		TextButtonStyle tbStyle = new TextButtonStyle();
+		tbStyle.up = skin.getDrawable("buttonnormal");
+		tbStyle.down = skin.getDrawable("buttonpressed");
+		tbStyle.font = b;
+		startButton = new TextButton("Resume", tbStyle);
+		startButton.setWidth(buttonWidth);
+		startButton.setHeight(buttonHeight);
+		startButton.setX(Gdx.graphics.getWidth() / 4 - startButton.getWidth()
+				/ 2 + 75);
+		startButton.setY(buttonY + 2 * (buttonHeight - 30));
+		startButton.addListener(new InputListener() {
+			public boolean touchDown(InputEvent event, float x, float y,
+					int pointer, int button) {
+				return true;
+			}
+
+			public void touchUp(InputEvent event, float x, float y,
+					int pointer, int button) {
+				paused = false;
+				Gdx.input.setInputProcessor(stage);
+			}
+		});
+
+		quitButton = new TextButton("Menu", tbStyle);
+		quitButton.setWidth(buttonWidth);
+		quitButton.setHeight(buttonHeight);
+		quitButton.setX(3 * (Gdx.graphics.getWidth() / 4)
+				- startButton.getWidth() / 2 - 75);
+		quitButton.setY(buttonY + 2 * (buttonHeight - 30));
+		quitButton.addListener(new InputListener() {
+			public boolean touchDown(InputEvent event, float x, float y,
+					int pointer, int button) {
+				return true;
+			}
+
+			public void touchUp(InputEvent event, float x, float y,
+					int pointer, int button) {
+				game.setScreen(new MenuScreen(game));
+			}
+		});
+		pStage.addActor(startButton);
+		pStage.addActor(quitButton);
+
 	}
 
 	@Override
 	public void show() {
 		batch = new SpriteBatch();
-
+		skin = new Skin();
+		buttAtlas = new TextureAtlas("data/images/button.pack");
+		skin.addRegions(buttAtlas);
+		b = new BitmapFont(Gdx.files.internal("data/boneyfontblack.fnt"), false);
 		fontW = new BitmapFont(Gdx.files.internal("data/chilly.fnt"), false);
 		song = Gdx.audio.newMusic(Gdx.files
 				.internal("data/sound/music/Lawn.mp3"));
@@ -359,9 +433,13 @@ public class LevelScreen implements Screen {
 		levelSheet.dispose();
 		dog.dispose();
 		boneySheet.dispose();
+		buttAtlas.dispose();
+		skin.dispose();
+		pStage.dispose();
 		stage.dispose();
 		batch.dispose();
 		fontW.dispose();
+		b.dispose();
 		song.dispose();
 	}
 
