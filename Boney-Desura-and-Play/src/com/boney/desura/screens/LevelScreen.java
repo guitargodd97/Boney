@@ -5,7 +5,6 @@ import java.util.Random;
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
@@ -30,6 +29,7 @@ import com.boney.desura.dogs.MediumDog;
 import com.boney.desura.dogs.SmallDog;
 import com.boney.desura.moveable.Boney;
 import com.boney.desura.moveable.Powerup;
+import com.boney.desura.other.Boxes;
 //---------------------------------------------------------------------------------------------
 //
 //LevelScreen.java
@@ -50,7 +50,8 @@ public class LevelScreen implements Screen {
 	// Numbers
 	float jumpRadius, jumpX, jumpY, crouchRadius, crouchX, crouchY, score;
 	private Array<Integer> waves = new Array<Integer>();
-	int waveIndex, level, stageNum, introBox, introState;
+	int waveIndex, level, stageNum, introBox, introState, boxWidth, boxHeight,
+			boxX, boxY;
 	int powerTimer, powerLimit;
 	String introText[] = new String[5];
 	// Objects
@@ -63,6 +64,7 @@ public class LevelScreen implements Screen {
 	Boney boney;
 	Sprite back, jumpUp, jumpDown, crouchUp, crouchDown;
 	Sprite[] dogs = new Sprite[3];
+	Boxes intro, pause;
 	boolean showIntroBox;
 	private final Pool<SmallDog> smallDogPool = new Pool<SmallDog>() {
 		@Override
@@ -91,7 +93,7 @@ public class LevelScreen implements Screen {
 	private final Array<Powerup> activePowerups = new Array<Powerup>();
 	private final Array<GenericDog> activeDogs = new Array<GenericDog>();
 	private BitmapFont fontW;
-	private Label label, moneyLabel, pntLabel;
+	private Label label, moneyLabel, pntLabel, pauseLabel, introLabel;
 	private int enterP, pP;
 	private boolean paused, survival;
 
@@ -150,6 +152,12 @@ public class LevelScreen implements Screen {
 		Powerup p = powerPool.obtain();
 		p.init();
 		activePowerups.add(p);
+		pause = new Boxes(0);
+		intro = new Boxes(1);
+		boxWidth = (int) ((int) Gdx.graphics.getWidth() * 0.85);
+		boxHeight = (int) ((int) Gdx.graphics.getHeight() * 0.85);
+		boxX = (int) ((int) Gdx.graphics.getWidth() - boxWidth) / 2;
+		boxY = (int) ((int) Gdx.graphics.getHeight() - boxHeight) / 2;
 	}
 
 	private GenericDog whichDog() {
@@ -168,14 +176,22 @@ public class LevelScreen implements Screen {
 	public void render(float delta) {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-		// All this needs to go inside Boney
-		if (Gdx.input.isKeyPressed(Keys.ESCAPE)
-				|| Gdx.input.isKeyPressed(Keys.BACK)) {
-			game.setScreen(new MenuScreen(game));
-			boney.setState(0);
-		}
 		batch.begin();
 		back.draw(batch);
+		boney.draw(batch);
+		for (GenericDog d : activeDogs)
+			d.draw(batch);
+
+		if (game.getApp() == ApplicationType.Android) {
+			jumpUp.draw(batch);
+			crouchUp.draw(batch);
+			if (Gdx.input.isTouched()) {
+				if (jumpRect.contains(Gdx.input.getX(), Gdx.input.getY()))
+					jumpDown.draw(batch);
+				if (crouchRect.contains(Gdx.input.getX(), Gdx.input.getY()))
+					crouchDown.draw(batch);
+			}
+		}
 		if (showIntroBox)
 			doIntro();
 		else if (boney.getLife() && !paused) {
@@ -259,27 +275,13 @@ public class LevelScreen implements Screen {
 			else if (pP == 1 && !Gdx.input.isKeyPressed(Input.Keys.P))
 				pP++;
 		}
-		boney.draw(batch);
-		for (GenericDog d : activeDogs)
-			d.draw(batch);
-
-		if (game.getApp() == ApplicationType.Android) {
-			jumpUp.draw(batch);
-			crouchUp.draw(batch);
-			if (Gdx.input.isTouched()) {
-				if (jumpRect.contains(Gdx.input.getX(), Gdx.input.getY()))
-					jumpDown.draw(batch);
-				if (crouchRect.contains(Gdx.input.getX(), Gdx.input.getY()))
-					crouchDown.draw(batch);
-			}
-		}
 		batch.end();
 		stage.act(delta);
 		batch.begin();
 		stage.draw();
 		batch.end();
 		render.begin(ShapeType.Filled);
-		for(int i = 0; i < boney.returnLives(); i++)
+		for (int i = 0; i < boney.returnLives(); i++)
 			render.rect((25 * i) + 15, 25, 15, 15);
 		render.end();
 	}
@@ -316,6 +318,14 @@ public class LevelScreen implements Screen {
 		stage.addActor(label);
 		stage.addActor(moneyLabel);
 		stage.addActor(pntLabel);
+		pauseLabel = new Label(pause.getMessage(), ls);
+		pauseLabel.setY(boxY);
+		pauseLabel.setWidth(width);
+		pauseLabel.setAlignment(Align.center);
+		introLabel = new Label(intro.updateIntro(), ls);
+		introLabel.setY(200);
+		introLabel.setWidth(width);
+		introLabel.setAlignment(Align.center);
 	}
 
 	@Override
@@ -379,11 +389,14 @@ public class LevelScreen implements Screen {
 				showIntroBox = false;
 				break;
 			}
-
+			introLabel.draw(batch, 1);
 		} else
 			showIntroBox = false;
-		if (getKeyUp(Input.Keys.ANY_KEY) || Gdx.input.justTouched())
+		if (getKeyUp(Input.Keys.ANY_KEY) || Gdx.input.justTouched()) {
 			introState++;
+			if (introState < 4)
+				introLabel.setText(intro.updateIntro());
+		}
 		if (enterP == 0 && Gdx.input.isKeyPressed(Input.Keys.ANY_KEY))
 			enterP++;
 		else if (enterP == 1 && !Gdx.input.isKeyPressed(Input.Keys.ANY_KEY))
