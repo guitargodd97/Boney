@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.boney.desura.BoneyGame;
+import com.boney.desura.other.Boxes;
 
 public class ShopScreen implements Screen {
 
@@ -33,10 +34,12 @@ public class ShopScreen implements Screen {
 	private Stage stage;
 	Label[] prices = new Label[8];
 	FileHandle saveLocation, cashLocation;
-	Label title, cash;
+	Label title, cash, noMoney;
+	Boxes noCash;
 	int[] cashPrice = new int[8], locos = new int[8], bytes = new int[10];
 	int money, click;
 	Music song;
+	boolean notEnough;
 
 	public ShopScreen(BoneyGame game) {
 		this.game = game;
@@ -82,6 +85,8 @@ public class ShopScreen implements Screen {
 		locos[7] = 3;
 		click = 0;
 		goBack = new Rectangle(Gdx.graphics.getWidth() - 40, 10, 35, 35);
+		noCash = new Boxes(4);
+		notEnough = false;
 	}
 
 	public void render(float delta) {
@@ -92,26 +97,33 @@ public class ShopScreen implements Screen {
 		for (Sprite s : boxes)
 			s.draw(batch);
 		imgBack.draw(batch);
+		if (notEnough)
+			noMoney.draw(batch, 1);
 		batch.end();
 		stage.draw();
 		for (int i = 0; i < rects.length; i++) {
 			if (Gdx.input.isTouched()) {
-				if (click == 0)
+				if (click == 0) {
 					click = 1;
+				}
 				if (rects[i].contains(Gdx.input.getX(), Gdx.input.getY())
 						&& click == 2) {
 					click = 0;
+
 					if (money >= cashPrice[i]) {
 						update(i);
+					} else if (notEnough) {
+						notEnough = false;
 					} else {
-						Gdx.app.log(BoneyGame.getLog(), "NOT ENOUGH MONEY");
+						notEnough = true;
 					}
 				}
 				if (goBack.contains(Gdx.input.getX(), Gdx.input.getY())
 						&& click == 2)
 					game.setScreen(new ModeScreen(game));
-			} else if (click == 1)
+			} else if (click == 1) {
 				click = 2;
+			}
 		}
 	}
 
@@ -153,35 +165,35 @@ public class ShopScreen implements Screen {
 			switch (i) {
 			case (0):
 				prices[0].setText("PP Frequency\nLevel: " + (int) bytes[4]
-						+ " - $" + ((int) bytes[4] * 20) * 1.00 + "0");
+						+ " = $" + ((int) bytes[4] * 20) * 1.00 + "0");
 				break;
 			case (1):
 				prices[1].setText("Score Bonus\nLevel: " + (int) bytes[7]
-						+ " - $" + ((int) bytes[7] * 20) * 1.00 + "0");
+						+ " = $" + ((int) bytes[7] * 20) * 1.00 + "0");
 				break;
 			case (2):
 				prices[2].setText("Dog Repelent\nLevel: " + (int) bytes[6]
-						+ " - $" + ((int) bytes[6] * 20) * 1.00 + "0");
+						+ " = $" + ((int) bytes[6] * 20) * 1.00 + "0");
 				break;
 			case (3):
 				prices[3].setText("Discount\nLevel: " + (int) (bytes[9] + 1)
-						+ " - $" + ((int) (bytes[9] + 1) * 20) * 1.00 + "0");
+						+ " = $" + ((int) (bytes[9] + 1) * 20) * 1.00 + "0");
 				break;
 			case (4):
-				prices[4].setText("Health\nLevel: " + (int) bytes[5] + " - $"
+				prices[4].setText("Health\nLevel: " + (int) bytes[5] + " = $"
 						+ ((int) bytes[5] * 20) * 1.00 + "0");
 				break;
 			case (5):
-				prices[5].setText("Speed\nLevel: " + (int) bytes[1] + " - $"
+				prices[5].setText("Speed\nLevel: " + (int) bytes[1] + " = $"
 						+ ((int) bytes[1] * 20) * 1.00 + "0");
 				break;
 			case (6):
 				prices[6].setText("Cash Bonus\nLevel: " + (int) bytes[2]
-						+ " - $" + ((int) bytes[2] * 20) * 1.00 + "0");
+						+ " = $" + ((int) bytes[2] * 20) * 1.00 + "0");
 				break;
 			case (7):
 				prices[7].setText("PP Duration\nLevel: " + (int) bytes[3]
-						+ " - $" + ((int) bytes[3] * 20) * 1.00 + "0");
+						+ " = $" + ((int) bytes[3] * 20) * 1.00 + "0");
 				break;
 			}
 
@@ -237,43 +249,43 @@ public class ShopScreen implements Screen {
 		Gdx.input.setInputProcessor(stage);
 		LabelStyle ls = new LabelStyle(fontW, Color.WHITE);
 		if (bytes[5] < 6)
-			prices[4] = new Label("Health\nLevel: " + (int) bytes[5] + " - $"
+			prices[4] = new Label("Health\nLevel: " + (int) bytes[5] + " = $"
 					+ ((int) bytes[5] * 20) * 1.00 + "0", ls);
 		else
 			prices[4] = new Label("Health\nLevel: MAXED", ls);
 		if (bytes[1] < 6)
-			prices[5] = new Label("Speed\nLevel: " + (int) bytes[1] + " - $"
+			prices[5] = new Label("Speed\nLevel: " + (int) bytes[1] + " = $"
 					+ ((int) bytes[1] * 20) * 1.00 + "0", ls);
 		else
 			prices[5] = new Label("Speed\nLevel: MAXED", ls);
 		if (bytes[2] < 6)
 			prices[6] = new Label("Cash Bonus\nLevel: " + (int) bytes[2]
-					+ " - $" + ((int) bytes[2] * 20) * 1.00 + "0", ls);
+					+ " = $" + ((int) bytes[2] * 20) * 1.00 + "0", ls);
 		else
 			prices[6] = new Label("Cash Bonus\nLevel: MAXED", ls);
 		if (bytes[3] < 6)
 			prices[7] = new Label("PP Duration\nLevel: " + (int) bytes[3]
-					+ " - $" + ((int) bytes[3] * 20) * 1.00 + "0", ls);
+					+ " = $" + ((int) bytes[3] * 20) * 1.00 + "0", ls);
 		else
 			prices[7] = new Label("PP Duration\nLevel: MAXED", ls);
 		if (bytes[4] < 6)
 			prices[0] = new Label("PP Frequency\nLevel: " + (int) bytes[4]
-					+ " - $" + ((int) bytes[4] * 20) * 1.00 + "0", ls);
+					+ " = $" + ((int) bytes[4] * 20) * 1.00 + "0", ls);
 		else
 			prices[0] = new Label("PP Frequency\nLevel: MAXED", ls);
 		if (bytes[7] < 6)
 			prices[1] = new Label("Score Bonus\nLevel: " + (int) bytes[7]
-					+ " - $" + ((int) bytes[7] * 20) * 1.00 + "0", ls);
+					+ " = $" + ((int) bytes[7] * 20) * 1.00 + "0", ls);
 		else
 			prices[1] = new Label("Score Bonus\nLevel: MAXED", ls);
 		if (bytes[6] < 6)
 			prices[2] = new Label("Dog Repelent\nLevel: " + (int) bytes[6]
-					+ " - $" + ((int) bytes[6] * 20) * 1.00 + "0", ls);
+					+ " = $" + ((int) bytes[6] * 20) * 1.00 + "0", ls);
 		else
 			prices[2] = new Label("Dog Repelent\nLevel: MAXED", ls);
 		if (bytes[9] < 6)
 			prices[3] = new Label("Discount\nLevel: " + (int) (bytes[9] + 1)
-					+ " - $" + ((int) (bytes[9] + 1) * 20) * 1.00 + "0", ls);
+					+ " = $" + ((int) (bytes[9] + 1) * 20) * 1.00 + "0", ls);
 		else
 			prices[3] = new Label("Discount\nLevel: MAXED", ls);
 		for (int i = 0; i < prices.length; i++) {
@@ -293,8 +305,7 @@ public class ShopScreen implements Screen {
 		}
 		money = Integer.parseInt(c);
 		if (Integer.parseInt(c) % 100 == 0)
-			cash = new Label("Cash: $" + (Float.parseFloat(c) / 100) + "0",
-					ls);
+			cash = new Label("Cash: $" + (Float.parseFloat(c) / 100) + "0", ls);
 		else if (Integer.parseInt(c) % 10 == 0)
 			cash = new Label("Cash: $" + (Float.parseFloat(c) / 100) + "0", ls);
 		else
@@ -303,6 +314,10 @@ public class ShopScreen implements Screen {
 		cash.setAlignment(Align.center);
 		stage.addActor(cash);
 		stage.addActor(title);
+		noMoney = new Label(noCash.getMessage(), ls);
+		noMoney.setY(200);
+		noMoney.setWidth(width);
+		noMoney.setAlignment(Align.center);
 	}
 
 	@Override
@@ -318,10 +333,9 @@ public class ShopScreen implements Screen {
 		imgBack = shop.createSprite("back");
 		imgBack.setX(Gdx.graphics.getWidth() - 40);
 		imgBack.setY(Gdx.graphics.getHeight() - 40);
-		
+
 		lawnBackground = background.createSprite("background-main");
 
-	
 		lawnBackground.setPosition(0, 0);
 		lawnBackground.setColor(1, 1, 1, 0.3f);
 		boxes[4] = shop.createSprite("storeNA");
