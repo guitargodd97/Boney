@@ -20,6 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.boney.desura.BoneyGame;
+import com.boney.desura.other.Boxes;
 
 public class MenuScreen implements Screen {
 	// Variables
@@ -29,6 +30,7 @@ public class MenuScreen implements Screen {
 
 	// Strings and booleans
 	String backgroundAtlas, buttonAtlas, fontW, fontB, music;
+	boolean deletion;
 
 	// Images and the Like
 	Skin skin;
@@ -41,10 +43,11 @@ public class MenuScreen implements Screen {
 
 	// Other Objects
 	BoneyGame game;
-	Stage stage;
+	Stage stage, dStage;
 	SpriteBatch batch;
-	TextButton startButton, quitButton, creditButton, deleteButton;
-	Label label;
+	TextButton startButton, quitButton, creditButton, deleteButton, yes, no;
+	Label label, delLabel;
+	Boxes del;
 
 	public MenuScreen(BoneyGame game) {
 		this.game = game;
@@ -56,6 +59,8 @@ public class MenuScreen implements Screen {
 		fontW = "data/boneyfont.fnt";
 		backgroundAtlas = "data/images/background.atlas";
 		music = "data/sound/music/Boney Theme.mp3";
+		deletion = false;
+		del = new Boxes(2);
 	}
 
 	@Override
@@ -66,9 +71,15 @@ public class MenuScreen implements Screen {
 		batch.begin();
 		background.draw(batch);
 		batch.end();
-		stage.act(delta);
+		if (!deletion)
+			stage.act(delta);
+		else
+			dStage.act(delta);
 		batch.begin();
-		stage.draw();
+		if (!deletion)
+			stage.draw();
+		else
+			dStage.draw();
 		batch.end();
 	}
 
@@ -76,8 +87,14 @@ public class MenuScreen implements Screen {
 	public void resize(int width, int height) {
 		if (stage == null)
 			stage = new Stage(width, height, true);
+		if (dStage == null)
+			dStage = new Stage(width, height, true);
 		stage.clear();
-		Gdx.input.setInputProcessor(stage);
+		dStage.clear();
+		if (!deletion)
+			Gdx.input.setInputProcessor(stage);
+		else
+			Gdx.input.setInputProcessor(dStage);
 		TextButtonStyle tbStyle = new TextButtonStyle();
 		tbStyle.up = skin.getDrawable("buttonnormal");
 		tbStyle.down = skin.getDrawable("buttonpressed");
@@ -150,12 +167,8 @@ public class MenuScreen implements Screen {
 
 			public void touchUp(InputEvent event, float x, float y,
 					int pointer, int button) {
-				FileHandle saveLocation, cashLocation;
-				saveLocation = Gdx.files.local("data/stats.bin");
-				cashLocation = Gdx.files.local("data/money.txt");
-				saveLocation.writeBytes(new byte[] { 0, 1, 1, 1, 1, 1, 1, 1, 1,
-						0 }, false);
-				cashLocation.writeString("0", false);
+				deletion = true;
+				Gdx.input.setInputProcessor(dStage);
 			}
 		});
 
@@ -170,6 +183,61 @@ public class MenuScreen implements Screen {
 		stage.addActor(quitButton);
 		stage.addActor(deleteButton);
 		stage.addActor(label);
+
+		delLabel = new Label(del.getMessage(), ls);
+		delLabel.setY(200);
+		delLabel.setAlignment(Align.center);
+		delLabel.setWidth(width);
+
+		yes = new TextButton("Yes", tbStyle);
+		yes.setWidth(buttonWidth);
+		yes.setHeight(buttonHeight);
+		yes.setX(Gdx.graphics.getWidth() / 4 - startButton.getWidth() / 2 + 75);
+		yes.setY(buttonY + 2 * (buttonHeight - 30));
+		yes.addListener(new InputListener() {
+			public boolean touchDown(InputEvent event, float x, float y,
+					int pointer, int button) {
+				return true;
+			}
+
+			public void touchUp(InputEvent event, float x, float y,
+					int pointer, int button) {
+				deletion = false;
+				Gdx.app.log("sdfs", "deleted");
+				FileHandle saveLocation, cashLocation;
+				saveLocation = Gdx.files.local("data/stats.bin");
+				cashLocation = Gdx.files.local("data/money.txt");
+				saveLocation.delete();
+				saveLocation.writeBytes(new byte[] { 0, 1, 1, 1, 1, 1, 1, 1, 1,
+						0 }, false);
+				cashLocation.delete();
+				cashLocation.writeString("0", false);
+				Gdx.input.setInputProcessor(stage);
+			}
+		});
+
+		no = new TextButton("No", tbStyle);
+		no.setWidth(buttonWidth);
+		no.setHeight(buttonHeight);
+		no.setX(3 * (Gdx.graphics.getWidth() / 4) - startButton.getWidth() / 2
+				- 75);
+		no.setY(buttonY + 2 * (buttonHeight - 30));
+		no.addListener(new InputListener() {
+			public boolean touchDown(InputEvent event, float x, float y,
+					int pointer, int button) {
+				return true;
+			}
+
+			public void touchUp(InputEvent event, float x, float y,
+					int pointer, int button) {
+				deletion = false;
+				Gdx.input.setInputProcessor(stage);
+			}
+		});
+
+		dStage.addActor(delLabel);
+		dStage.addActor(yes);
+		dStage.addActor(no);
 	}
 
 	@Override
@@ -206,6 +274,7 @@ public class MenuScreen implements Screen {
 		batch.dispose();
 		skin.dispose();
 		stage.dispose();
+		dStage.dispose();
 		f.dispose();
 		b.dispose();
 		menuAtlas.dispose();
