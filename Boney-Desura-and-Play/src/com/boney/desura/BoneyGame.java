@@ -26,7 +26,7 @@ public class BoneyGame extends Game {
 	// Strings and Booleans
 	public static final String VERSION = "Ver. 1.1 Beta";
 	private static final String LOG = "Boney";
-	public static final boolean FREE = false; 
+	public static final boolean FREE = true; 
 	ApplicationType app;
 
 	// create()

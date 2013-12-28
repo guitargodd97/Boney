@@ -12,19 +12,24 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.boney.desura.BoneyGame;
+import com.boney.desura.other.Boxes;
 
 public class ModeScreen implements Screen {
 	BoneyGame game;
 	Stage stage;
 	Label[] label = new Label[4];
+	Label version;
+	Boxes vT;
 	Rectangle rect[] = new Rectangle[4];
 	SpriteBatch batch;
 	private BitmapFont fontW;
 	TextureAtlas atlas;
 	Sprite classic, survive, upgrade, custom;
-	
-	
+	int NA;
+	boolean vN;
+
 	public ModeScreen(BoneyGame game) {
 		this.game = game;
 		for (int i = 0; i < rect.length; i++) {
@@ -38,7 +43,9 @@ public class ModeScreen implements Screen {
 				Gdx.graphics.getHeight() / 2 + 10);
 		rect[2].setPosition(0, 0);
 		rect[3].setPosition(Gdx.graphics.getWidth() / 2 + 10, 0);
-
+		vT = new Boxes(3);
+		NA = 0;
+		vN = false;
 	}
 
 	@Override
@@ -53,14 +60,21 @@ public class ModeScreen implements Screen {
 		custom.draw(batch);
 		survive.draw(batch);
 		classic.draw(batch);
+		if (vN)
+			version.draw(batch, 1);
 		batch.end();
 		if (Gdx.input.justTouched()) {
 			if (rect[0].contains(Gdx.input.getX(), Gdx.input.getY()))
 				game.setScreen(new ShopScreen(game));
-			else if (rect[1].contains(Gdx.input.getX(), Gdx.input.getY()))
-				// game.setScreen(new SelectionScreen(game));
-				Gdx.app.log("", "" + 1);
-			else if (rect[2].contains(Gdx.input.getX(), Gdx.input.getY()))
+			else if (rect[1].contains(Gdx.input.getX(), Gdx.input.getY())) {
+				if (BoneyGame.FREE) {
+					NA = 0;
+					if (vN)
+						vN = false;
+					else
+						vN = true;
+				}
+			} else if (rect[2].contains(Gdx.input.getX(), Gdx.input.getY()))
 				game.setScreen(new SelectionScreen(game));
 			else if (rect[3].contains(Gdx.input.getX(), Gdx.input.getY()))
 				game.setScreen(new LevelScreen(game, 1, 10));
@@ -93,6 +107,10 @@ public class ModeScreen implements Screen {
 			l.setWidth(width);
 			stage.addActor(l);
 		}
+		version = new Label(vT.getMessage(), ls);
+		version.setAlignment(Align.center);
+		version.setWidth(width);
+		version.setY(200);
 	}
 
 	@Override
