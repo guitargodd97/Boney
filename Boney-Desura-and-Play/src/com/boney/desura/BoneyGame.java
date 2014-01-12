@@ -3,6 +3,17 @@ package com.boney.desura;
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.boney.desura.screens.CreditsScreen;
+import com.boney.desura.screens.GameoverScreen;
+import com.boney.desura.screens.LevelScreen;
+import com.boney.desura.screens.ModeScreen;
+import com.boney.desura.screens.SelectionScreen;
+import com.boney.desura.screens.ShopScreen;
 import com.boney.desura.screens.SplashScreen;
 
 //---------------------------------------------------------------------------------------------
@@ -21,13 +32,14 @@ import com.boney.desura.screens.SplashScreen;
 //---------------------------------------------------------------------------------------------
 
 public class BoneyGame extends Game {
-	/// Variables
+	// / Variables
 
 	// Strings and Booleans
 	public static final String VERSION = "Ver. 1.1 Beta";
 	private static final String LOG = "Boney";
-	public static final boolean FREE = true; 
+	public static final boolean FREE = true;
 	ApplicationType app;
+	private static AssetManager assetManager;
 
 	// create()
 	//
@@ -36,7 +48,29 @@ public class BoneyGame extends Game {
 	// Called naturally at the start of game
 	public void create() {
 		app = Gdx.app.getType();
+		setAssetManager(new AssetManager());
+		loadResources();
 		setScreen(new SplashScreen(this));
+
+	}
+
+	private void loadResources() {
+		getAssetManager().setLoader(TiledMap.class, new TmxMapLoader(
+				new InternalFileHandleResolver()));
+
+		// player textures
+		getAssetManager().load(SplashScreen.SPLASH_TEXTURES, TextureAtlas.class);
+		getAssetManager().load(CreditsScreen.BACKGROUND_TEXTURES, TextureAtlas.class);
+		getAssetManager().load(GameoverScreen.BUTTON_TEXTURES, TextureAtlas.class);
+		getAssetManager().load(LevelScreen.BONEY_SPRITE_SHEET, TextureAtlas.class);
+		getAssetManager().load(LevelScreen.DOGS_SPRITE_SHEET, TextureAtlas.class);
+		getAssetManager().load(LevelScreen.LEVEL_TEXTURES, TextureAtlas.class);
+		getAssetManager().load(ModeScreen.MODE_TEXTURES, TextureAtlas.class);
+		getAssetManager().load(SelectionScreen.SELECTION_TEXTURES, TextureAtlas.class);
+		getAssetManager().load(ShopScreen.SHOP_TEXTURES, TextureAtlas.class);
+
+		// do the actual loading
+		getAssetManager().finishLoading();
 	}
 
 	// dispose()
@@ -46,6 +80,7 @@ public class BoneyGame extends Game {
 	// Called naturally at the end of the game
 	public void dispose() {
 		super.dispose();
+		getAssetManager().dispose();
 	}
 
 	// render()
@@ -92,6 +127,20 @@ public class BoneyGame extends Game {
 
 	public ApplicationType getApp() {
 		return app;
+	}
+
+	/**
+	 * @return the assetManager
+	 */
+	public static AssetManager getAssetManager() {
+		return assetManager;
+	}
+
+	/**
+	 * @param assetManager the assetManager to set
+	 */
+	public static void setAssetManager(AssetManager assetManager) {
+		BoneyGame.assetManager = assetManager;
 	}
 }
 // Hunter Heidenreich 2013

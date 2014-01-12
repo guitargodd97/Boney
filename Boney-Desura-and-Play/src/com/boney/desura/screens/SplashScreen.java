@@ -31,7 +31,9 @@ public class SplashScreen implements Screen {
 
 	// Booleans and Strings
 	protected boolean reverse, hasPlayed, assigned;
-	protected String staticSound, splashSound, atlas;
+	public static final String staticSound = "data/sound/sfx/static.mp3",
+			splashSound = "data/sound/music/splashsound.mp3";
+	public static final String SPLASH_TEXTURES = "data/images/splash.atlas";
 
 	// Images and the Like
 	protected TextureAtlas splashAtlas;
@@ -47,10 +49,7 @@ public class SplashScreen implements Screen {
 	// Constructor
 	public SplashScreen(BoneyGame game) {
 		this.game = game;
-		splashSound = "data/sound/music/splashsound.mp3";
-		staticSound = "data/sound/sfx/static.mp3";
-		atlas = "data/images/splash.atlas";
-		splashAtlas = new TextureAtlas("data/images/splash.atlas");
+		splashAtlas = game.getAssetManager().get(SPLASH_TEXTURES, TextureAtlas.class);
 		reverse = false;
 		hasPlayed = false;
 
@@ -122,7 +121,6 @@ public class SplashScreen implements Screen {
 	@Override
 	public void dispose() {
 		batch.dispose();
-		splashAtlas.dispose();
 		splashS.dispose();
 	}
 

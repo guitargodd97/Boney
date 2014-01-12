@@ -34,6 +34,7 @@ public class CreditsScreen implements Screen {
 
 	// Strings and Booleans
 	String aboutUs;
+	public static final String BACKGROUND_TEXTURES = "data/images/background.atlas";
 
 	// Objects
 	BoneyGame game;
@@ -120,7 +121,7 @@ public class CreditsScreen implements Screen {
 				false);
 		littleFont = new BitmapFont(Gdx.files.internal("data/boneybody.fnt"),
 				false);
-		imgAtlas = new TextureAtlas("data/images/background.atlas");
+		imgAtlas = BoneyGame.getAssetManager().get(BACKGROUND_TEXTURES, TextureAtlas.class);
 
 		background = imgAtlas.createSprite("background-main");
 
@@ -167,7 +168,6 @@ public class CreditsScreen implements Screen {
 		stage.dispose();
 		bigFont.dispose();
 		littleFont.dispose();
-		imgAtlas.dispose();
 		backMusic.dispose();
 	}
 }

@@ -32,6 +32,8 @@ public class SelectionScreen implements Screen {
 	Label label[] = new Label[3];
 	Rectangle stages[] = new Rectangle[3];
 	int level;
+	public static final String BACKGROUND_TEXTURES = "data/images/background.atlas";
+	public static final String SELECTION_TEXTURES = "data/images/selection.atlas";
 
 	public SelectionScreen(BoneyGame game) {
 		this.game = game;
@@ -125,8 +127,8 @@ public class SelectionScreen implements Screen {
 	@Override
 	public void show() {
 		batch = new SpriteBatch();
-		atlas = new TextureAtlas("data/images/background.atlas");
-		selection = new TextureAtlas("data/images/selection.atlas");
+		atlas = game.getAssetManager().get(BACKGROUND_TEXTURES, TextureAtlas.class);
+		selection = game.getAssetManager().get(SELECTION_TEXTURES, TextureAtlas.class);
 		mini = atlas.createSprite("background-main");
 		mini.setScale(0.3f);
 		mini.setPosition(0, 25);
@@ -158,8 +160,6 @@ public class SelectionScreen implements Screen {
 	public void dispose() {
 		render.dispose();
 		batch.dispose();
-		atlas.dispose();
-		selection.dispose();
 		stage.dispose();
 		numbers.dispose();
 	}

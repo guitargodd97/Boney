@@ -50,6 +50,8 @@ public class GameoverScreen implements Screen {
 	int score, level, stageNum, dogNum;
 	double cash;
 	boolean levelCompleted;
+	public static final String BACKGROUND_TEXTURES = "data/images/background.atlas";
+	public static final String BUTTON_TEXTURES = "data/images/button.pack";
 	private TextureAtlas atlas, buttAtlas;
 	int buttonWidth, buttonHeight, buttonY;
 	Skin skin;
@@ -86,19 +88,22 @@ public class GameoverScreen implements Screen {
 	//
 	// Naturally called
 	public void render(float delta) {
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-		render.begin(ShapeType.Filled);
-		render.setColor(0.1f, 0.1f, 0.1f, 1f);
-		render.rect(levelLocation.x, levelLocation.y, levelSize.x, levelSize.y);
-		render.end();
-		batch.begin();
-		background.draw(batch);
-		batch.end();
-		stage.act(delta);
-		batch.begin();
-		stage.draw();
-		batch.end();
+		if (game.getAssetManager().update()) {
+			Gdx.gl.glClearColor(0, 0, 0, 1);
+			Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+			render.begin(ShapeType.Filled);
+			render.setColor(0.1f, 0.1f, 0.1f, 1f);
+			render.rect(levelLocation.x, levelLocation.y, levelSize.x,
+					levelSize.y);
+			render.end();
+			batch.begin();
+			background.draw(batch);
+			batch.end();
+			stage.act(delta);
+			batch.begin();
+			stage.draw();
+			batch.end();
+		}
 	}
 
 	// resize()
@@ -190,8 +195,8 @@ public class GameoverScreen implements Screen {
 	public void show() {
 		skin = new Skin();
 		batch = new SpriteBatch();
-		atlas = new TextureAtlas("data/images/background.atlas");
-		buttAtlas = new TextureAtlas("data/images/button.pack");
+		atlas = game.getAssetManager().get(BACKGROUND_TEXTURES, TextureAtlas.class);
+		buttAtlas = game.getAssetManager().get(BUTTON_TEXTURES, TextureAtlas.class);
 		skin.addRegions(buttAtlas);
 		background = atlas.createSprite("background-main");
 		background.setPosition(0, 0);
@@ -243,8 +248,6 @@ public class GameoverScreen implements Screen {
 		fontW.dispose();
 		b.dispose();
 		song.dispose();
-		atlas.dispose();
-		buttAtlas.dispose();
 		skin.dispose();
 	}
 }

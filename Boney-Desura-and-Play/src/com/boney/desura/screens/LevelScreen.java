@@ -60,6 +60,11 @@ public class LevelScreen implements Screen {
 	int powerTimer, powerLimit;
 	int buttonWidth, buttonHeight, buttonY;
 	String introText[] = new String[5];
+	public static final String BACKGROUND_TEXTURES = "data/images/background.atlas";
+	public static final String BONEY_SPRITE_SHEET = "data/images/boney.atlas";
+	public static final String DOGS_SPRITE_SHEET = "data/images/dog.atlas";
+	public static final String LEVEL_TEXTURES = "data/images/level.atlas";
+	public static final String BUTTON_TEXTURES = "data/images/button.pack";
 	// Objects
 	SpriteBatch batch;
 	TextureAtlas background, boneySheet, dog, levelSheet;
@@ -403,7 +408,7 @@ public class LevelScreen implements Screen {
 	public void show() {
 		batch = new SpriteBatch();
 		skin = new Skin();
-		buttAtlas = new TextureAtlas("data/images/button.pack");
+		buttAtlas = game.getAssetManager().get(BUTTON_TEXTURES, TextureAtlas.class);
 		skin.addRegions(buttAtlas);
 		b = new BitmapFont(Gdx.files.internal("data/boneyfontblack.fnt"), false);
 		fontW = new BitmapFont(Gdx.files.internal("data/chilly.fnt"), false);
@@ -429,11 +434,6 @@ public class LevelScreen implements Screen {
 	@Override
 	public void dispose() {
 		render.dispose();
-		background.dispose();
-		levelSheet.dispose();
-		dog.dispose();
-		boneySheet.dispose();
-		buttAtlas.dispose();
 		skin.dispose();
 		pStage.dispose();
 		stage.dispose();
@@ -483,10 +483,10 @@ public class LevelScreen implements Screen {
 	}
 
 	public void initializeImages() {
-		background = new TextureAtlas("data/images/background.atlas");
-		dog = new TextureAtlas("data/images/dog.atlas");
-		boneySheet = new TextureAtlas("data/images/boney.atlas");
-		levelSheet = new TextureAtlas("data/images/level.atlas");
+		background = game.getAssetManager().get(BACKGROUND_TEXTURES, TextureAtlas.class);
+		dog = game.getAssetManager().get(DOGS_SPRITE_SHEET, TextureAtlas.class);
+		boneySheet = game.getAssetManager().get(BONEY_SPRITE_SHEET, TextureAtlas.class);
+		levelSheet = game.getAssetManager().get(LEVEL_TEXTURES, TextureAtlas.class);
 
 		back = background.createSprite("background-main");
 

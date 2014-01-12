@@ -25,6 +25,7 @@ public class ModeScreen implements Screen {
 	Rectangle rect[] = new Rectangle[4];
 	SpriteBatch batch;
 	private BitmapFont fontW;
+	public static final String MODE_TEXTURES = "data/images/mode.atlas";
 	TextureAtlas atlas;
 	Sprite classic, survive, upgrade, custom;
 	int NA;
@@ -117,7 +118,7 @@ public class ModeScreen implements Screen {
 	public void show() {
 		batch = new SpriteBatch();
 		fontW = new BitmapFont(Gdx.files.internal("data/chilly.fnt"), false);
-		atlas = new TextureAtlas("data/images/mode.atlas");
+		atlas = game.getAssetManager().get(MODE_TEXTURES, TextureAtlas.class);
 
 		classic = atlas.createSprite("modeClassic");
 		classic.setPosition(rect[0].x, rect[0].y - 10);
@@ -155,7 +156,6 @@ public class ModeScreen implements Screen {
 		fontW.dispose();
 		stage.dispose();
 		batch.dispose();
-		atlas.dispose();
 	}
 
 }

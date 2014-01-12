@@ -30,6 +30,8 @@ public class ShopScreen implements Screen {
 	Sprite imgBack, lawnBackground;
 	SpriteBatch batch;
 	TextureAtlas background, shop;
+	public static final String BACKGROUND_TEXTURES = "data/images/background.atlas";
+	public static final String SHOP_TEXTURES = "data/images/shop.atlas";
 	private BitmapFont fontW;
 	private Stage stage;
 	Label[] prices = new Label[8];
@@ -110,7 +112,7 @@ public class ShopScreen implements Screen {
 						&& click == 2) {
 					click = 0;
 
-					if (money >= cashPrice[i]) {
+					if (money > cashPrice[i]) {
 						update(i);
 					} else if (notEnough) {
 						notEnough = false;
@@ -155,8 +157,10 @@ public class ShopScreen implements Screen {
 			break;
 		}
 		if (bytes[locos[i]] < 6) {
-			money -= cashPrice[i];
-			bytes[locos[i]] += 1;
+			if (money >= cashPrice[i]) {
+				money -= cashPrice[i];
+				bytes[locos[i]] += 1;
+			}
 			byte b[] = new byte[bytes.length];
 			for (int x = 0; x < bytes.length; x++)
 				b[x] = (byte) bytes[x];
@@ -328,8 +332,8 @@ public class ShopScreen implements Screen {
 		song.play();
 		song.setLooping(true);
 		fontW = new BitmapFont(Gdx.files.internal("data/chilly.fnt"), false);
-		background = new TextureAtlas("data/images/background.atlas");
-		shop = new TextureAtlas("data/images/shop.atlas");
+		background = game.getAssetManager().get(BACKGROUND_TEXTURES, TextureAtlas.class);
+		shop = game.getAssetManager().get(SHOP_TEXTURES, TextureAtlas.class);
 		imgBack = shop.createSprite("back");
 		imgBack.setX(Gdx.graphics.getWidth() - 40);
 		imgBack.setY(Gdx.graphics.getHeight() - 40);
@@ -374,8 +378,6 @@ public class ShopScreen implements Screen {
 	@Override
 	public void dispose() {
 		batch.dispose();
-		shop.dispose();
-		background.dispose();
 		fontW.dispose();
 		stage.dispose();
 		song.dispose();

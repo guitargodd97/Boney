@@ -29,7 +29,9 @@ public class MenuScreen implements Screen {
 	int buttonWidth, buttonHeight, buttonY;
 
 	// Strings and booleans
-	String backgroundAtlas, buttonAtlas, fontW, fontB, music;
+	public static final String BACKGROUND_TEXTURES = "data/images/background.atlas";
+	public static final String BUTTON_TEXTURES = "data/images/button.pack";
+	String fontW, fontB, music;
 	boolean deletion;
 
 	// Images and the Like
@@ -54,10 +56,8 @@ public class MenuScreen implements Screen {
 		buttonWidth = 200;
 		buttonHeight = 75;
 		buttonY = 15;
-		buttonAtlas = "data/images/button.pack";
 		fontB = "data/boneyfontblack.fnt";
 		fontW = "data/boneyfont.fnt";
-		backgroundAtlas = "data/images/background.atlas";
 		music = "data/sound/music/Boney Theme.mp3";
 		deletion = false;
 		del = new Boxes(2);
@@ -244,8 +244,8 @@ public class MenuScreen implements Screen {
 	public void show() {
 		batch = new SpriteBatch();
 		skin = new Skin();
-		menuAtlas = new TextureAtlas(backgroundAtlas);
-		buttAtlas = new TextureAtlas(buttonAtlas);
+		menuAtlas = game.getAssetManager().get(BACKGROUND_TEXTURES, TextureAtlas.class);
+		buttAtlas = game.getAssetManager().get(BUTTON_TEXTURES, TextureAtlas.class);
 		b = new BitmapFont(Gdx.files.internal(fontB));
 		f = new BitmapFont(Gdx.files.internal(fontW));
 		m = Gdx.audio.newMusic(Gdx.files.internal(music));
@@ -277,8 +277,6 @@ public class MenuScreen implements Screen {
 		dStage.dispose();
 		f.dispose();
 		b.dispose();
-		menuAtlas.dispose();
-		buttAtlas.dispose();
 		m.dispose();
 	}
 
