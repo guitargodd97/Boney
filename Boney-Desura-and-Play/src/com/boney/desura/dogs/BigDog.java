@@ -4,24 +4,44 @@ import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+//---------------------------------------------------------------------------------------------
+//
+//LargeDog.java
+//Last Revised: 1/12/2014
+//Author: Hunter Heidenreich
+//Product of: Day Ja Voo Games
+//
+//---------------------------------------------------------------------------------------------
+//Summary of Class:
+//
+//This is the the large instance of the dog interface
+//
+//---------------------------------------------------------------------------------------------
 
 public class BigDog extends GenericDog {
-	public static Sprite[] pics = new Sprite[6], otherPics = new Sprite[6];
+	public static Sprite[] pics = new Sprite[6];
+	public static Sprite[] otherPics = new Sprite[6];
+	private boolean switchSprite;
+	private boolean mid;
 	private int animationBuffer;
 	private int currentFrame;
-	public boolean switchSprite;
-	private boolean mid;
 
+	// Initializes the BigDog
 	public BigDog() {
 		super(128, 128, pics[0], 2);
 		pntWorth = 100;
 		switchSprite = false;
+
+		// Determines whether the dog will stop in the middle or the side
 		Random ran = new Random();
 		mid = ran.nextBoolean();
 	}
 
+	// Moves the dog
 	public void move() {
 		super.move();
+
+		// Animates the dog
 		animationBuffer++;
 		if (animationBuffer > 7) {
 			animationBuffer = 0;
@@ -29,6 +49,8 @@ public class BigDog extends GenericDog {
 			if (currentFrame > 5)
 				currentFrame = 0;
 		}
+
+		// Hyper or regular
 		if (!switchSprite) {
 			pictura = pics[currentFrame];
 			switchSprite = normalGetDone();
@@ -37,14 +59,16 @@ public class BigDog extends GenericDog {
 		}
 	}
 
-	// Stop and bark
+	// Specialty movement
 	public void specialty() {
 	}
 
+	// Get points
 	public int getWorth() {
 		return pntWorth;
 	}
 
+	// Gets whether the dog is done
 	public boolean getDone() {
 		if (side <= 0.5) {
 			if (location.x > Gdx.graphics.getWidth() + 10 && switchSprite)
@@ -56,6 +80,7 @@ public class BigDog extends GenericDog {
 		return false;
 	}
 
+	// Gets whether the dog should turn around
 	public boolean normalGetDone() {
 		if (mid) {
 			if (side >= 0.5) {
@@ -72,7 +97,6 @@ public class BigDog extends GenericDog {
 				}
 			}
 		} else {
-			Gdx.app.log("Swithc", "Otha side");
 			if (side >= 0.5) {
 				if (location.x > (Gdx.graphics.getWidth() / 2) + 10) {
 					xVelocity *= -2;
@@ -90,3 +114,4 @@ public class BigDog extends GenericDog {
 		return false;
 	}
 }
+// Hunter Heidenreich 2014

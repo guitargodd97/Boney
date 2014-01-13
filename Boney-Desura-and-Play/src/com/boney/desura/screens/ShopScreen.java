@@ -18,33 +18,57 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.boney.desura.BoneyGame;
 import com.boney.desura.other.Boxes;
+//---------------------------------------------------------------------------------------------
+//
+//ShopScreen.java
+//Last Revised: 1/12/2014
+//Author: Hunter Heidenreich
+//Product of: Day Ja Voo Games
+//
+//---------------------------------------------------------------------------------------------
+//Summary of Class:
+//
+//This is a class that runs the Shop Screen.
+//
+//---------------------------------------------------------------------------------------------
 
 public class ShopScreen implements Screen {
-
-	BoneyGame game;
-	Vector2[] topRow = new Vector2[4], bottomRow = new Vector2[4];
-	Vector2 shape;
-	Rectangle goBack;
-	Rectangle[] rects = new Rectangle[8];
-	Sprite[] boxes = new Sprite[8];
-	Sprite imgBack, lawnBackground;
-	SpriteBatch batch;
-	TextureAtlas background, shop;
 	public static final String BACKGROUND_TEXTURES = "data/images/background.atlas";
 	public static final String SHOP_TEXTURES = "data/images/shop.atlas";
 	private BitmapFont fontW;
+	private boolean notEnough;
+	private BoneyGame game;
+	private Boxes noCash;
+	private FileHandle saveLocation;
+	private FileHandle cashLocation;
+	private int money;
+	private int click;
+	private int[] cashPrice = new int[8];
+	private int[] locos = new int[8];
+	private int[] bytes = new int[10];
+	private Label title;
+	private Label cash;
+	private Label noMoney;
+	private Label[] prices = new Label[8];
+	private Music song;
+	private Rectangle goBack;
+	private Rectangle[] rects = new Rectangle[8];
+	private Sprite imgBack;
+	private Sprite lawnBackground;
+	private Sprite[] boxes = new Sprite[8];
+	private SpriteBatch batch;
 	private Stage stage;
-	Label[] prices = new Label[8];
-	FileHandle saveLocation, cashLocation;
-	Label title, cash, noMoney;
-	Boxes noCash;
-	int[] cashPrice = new int[8], locos = new int[8], bytes = new int[10];
-	int money, click;
-	Music song;
-	boolean notEnough;
+	private TextureAtlas background;
+	private TextureAtlas shop;
+	private Vector2 shape;
+	private Vector2[] topRow = new Vector2[4];
+	private Vector2[] bottomRow = new Vector2[4];
 
+	// Initializes the ShopScreen
 	public ShopScreen(BoneyGame game) {
 		this.game = game;
+
+		// Setup the locations for the shop icons
 		shape = new Vector2((Gdx.graphics.getWidth() - 60) / 4,
 				(Gdx.graphics.getHeight() - 55) / 2 - 5);
 		for (int i = 0; i < topRow.length; i++)
@@ -56,6 +80,8 @@ public class ShopScreen implements Screen {
 		for (int i = 4; i < 8; i++)
 			rects[i] = new Rectangle(bottomRow[i - 4].x, bottomRow[i - 4].y,
 					shape.x, shape.y);
+
+		// Load the files and retreive data
 		saveLocation = Gdx.files.local("data/stats.bin");
 		cashLocation = Gdx.files.local("data/money.txt");
 		byte[] b;
@@ -68,6 +94,8 @@ public class ShopScreen implements Screen {
 		}
 		for (int i = 0; i < b.length; i++)
 			bytes[i] = (int) b[i];
+
+		// Set the prices
 		cashPrice[0] = ((int) b[4] * 20) * 100;
 		cashPrice[1] = ((int) b[7] * 20) * 100;
 		cashPrice[2] = ((int) b[6] * 20) * 100;
@@ -77,6 +105,7 @@ public class ShopScreen implements Screen {
 		cashPrice[6] = ((int) b[2] * 20) * 100;
 		cashPrice[7] = ((int) b[3] * 20) * 100;
 
+		// Set the indices for future setting and loading
 		locos[0] = 4;
 		locos[1] = 7;
 		locos[2] = 6;
@@ -85,172 +114,75 @@ public class ShopScreen implements Screen {
 		locos[5] = 1;
 		locos[6] = 2;
 		locos[7] = 3;
+
+		// Click buffer
 		click = 0;
+
+		// Go Back icon place
 		goBack = new Rectangle(Gdx.graphics.getWidth() - 40, 10, 35, 35);
+
+		// Not enough money initialization
 		noCash = new Boxes(4);
 		notEnough = false;
 	}
 
+	// Updates the screen
 	public void render(float delta) {
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-		batch.begin();
-		lawnBackground.draw(batch);
-		for (Sprite s : boxes)
-			s.draw(batch);
-		imgBack.draw(batch);
-		if (notEnough)
-			noMoney.draw(batch, 1);
-		batch.end();
-		stage.draw();
-		for (int i = 0; i < rects.length; i++) {
-			if (Gdx.input.isTouched()) {
-				if (click == 0) {
-					click = 1;
-				}
-				if (rects[i].contains(Gdx.input.getX(), Gdx.input.getY())
-						&& click == 2) {
-					click = 0;
+		if (BoneyGame.getAssetManager().update()) {
+			// Clears the screen
+			Gdx.gl.glClearColor(0, 0, 0, 1);
+			Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 
-					if (money > cashPrice[i]) {
-						update(i);
-					} else if (notEnough) {
-						notEnough = false;
-					} else {
-						notEnough = true;
+			// Draw the batch
+			batch.begin();
+			lawnBackground.draw(batch);
+			for (Sprite s : boxes)
+				s.draw(batch);
+			imgBack.draw(batch);
+			if (notEnough)
+				noMoney.draw(batch, 1);
+			batch.end();
+
+			// Draws the stage
+			stage.draw();
+
+			// Checks for input
+			for (int i = 0; i < rects.length; i++) {
+				if (Gdx.input.isTouched()) {
+					if (click == 0) {
+						click = 1;
 					}
+					if (rects[i].contains(Gdx.input.getX(), Gdx.input.getY())
+							&& click == 2) {
+						click = 0;
+
+						if (money > cashPrice[i]) {
+							update(i);
+						} else if (notEnough) {
+							notEnough = false;
+						} else {
+							notEnough = true;
+						}
+					}
+					if (goBack.contains(Gdx.input.getX(), Gdx.input.getY())
+							&& click == 2)
+						game.setScreen(new ModeScreen(game));
+				} else if (click == 1) {
+					click = 2;
 				}
-				if (goBack.contains(Gdx.input.getX(), Gdx.input.getY())
-						&& click == 2)
-					game.setScreen(new ModeScreen(game));
-			} else if (click == 1) {
-				click = 2;
 			}
 		}
 	}
 
-	private void update(int i) {
-		switch (i) {
-		case (0):
-			i = 4;
-			break;
-		case (1):
-			i = 5;
-			break;
-		case (2):
-			i = 6;
-			break;
-		case (3):
-			i = 7;
-			break;
-		case (4):
-			i = 0;
-			break;
-		case (5):
-			i = 1;
-			break;
-		case (6):
-			i = 2;
-			break;
-		case (7):
-			i = 3;
-			break;
-		}
-		if (bytes[locos[i]] < 6) {
-			if (money >= cashPrice[i]) {
-				money -= cashPrice[i];
-				bytes[locos[i]] += 1;
-			}
-			byte b[] = new byte[bytes.length];
-			for (int x = 0; x < bytes.length; x++)
-				b[x] = (byte) bytes[x];
-			saveLocation.writeBytes(b, false);
-			cashLocation.writeString("" + money, false);
-			switch (i) {
-			case (0):
-				prices[0].setText("PP Frequency\nLevel: " + (int) bytes[4]
-						+ " = $" + ((int) bytes[4] * 20) * 1.00 + "0");
-				break;
-			case (1):
-				prices[1].setText("Score Bonus\nLevel: " + (int) bytes[7]
-						+ " = $" + ((int) bytes[7] * 20) * 1.00 + "0");
-				break;
-			case (2):
-				prices[2].setText("Dog Repelent\nLevel: " + (int) bytes[6]
-						+ " = $" + ((int) bytes[6] * 20) * 1.00 + "0");
-				break;
-			case (3):
-				prices[3].setText("Discount\nLevel: " + (int) (bytes[9] + 1)
-						+ " = $" + ((int) (bytes[9] + 1) * 20) * 1.00 + "0");
-				break;
-			case (4):
-				prices[4].setText("Health\nLevel: " + (int) bytes[5] + " = $"
-						+ ((int) bytes[5] * 20) * 1.00 + "0");
-				break;
-			case (5):
-				prices[5].setText("Speed\nLevel: " + (int) bytes[1] + " = $"
-						+ ((int) bytes[1] * 20) * 1.00 + "0");
-				break;
-			case (6):
-				prices[6].setText("Cash Bonus\nLevel: " + (int) bytes[2]
-						+ " = $" + ((int) bytes[2] * 20) * 1.00 + "0");
-				break;
-			case (7):
-				prices[7].setText("PP Duration\nLevel: " + (int) bytes[3]
-						+ " = $" + ((int) bytes[3] * 20) * 1.00 + "0");
-				break;
-			}
-
-			String c;
-			if (cashLocation.exists())
-				c = cashLocation.readString();
-			else {
-				cashLocation.writeString("0", false);
-				c = cashLocation.readString();
-			}
-			money = Integer.parseInt(c);
-			if (money % 100 == 0)
-				cash.setText("Cash: $" + (Float.parseFloat(c) / 100) + ".00");
-			else if (Integer.parseInt(c) % 10 == 0)
-				cash.setText("Cash: $" + (Float.parseFloat(c) / 100) + "0");
-			else
-				cash.setText("Cash: $" + (Float.parseFloat(c) / 100));
-		} else {
-			switch (i) {
-			case (0):
-				prices[0].setText("PP Frequency\nLevel: MAXED");
-				break;
-			case (1):
-				prices[1].setText("Score Bonus\nLevel: MAXED");
-				break;
-			case (2):
-				prices[2].setText("Dog Repelent\nLevel: MAXED");
-				break;
-			case (3):
-				prices[3].setText("Discount\nLevel: MAXED");
-				break;
-			case (4):
-				prices[4].setText("Health\nLevel: MAXED");
-				break;
-			case (5):
-				prices[5].setText("Speed\nLevel: MAXED");
-				break;
-			case (6):
-				prices[6].setText("Cash Bonus\nLevel: MAXED");
-				break;
-			case (7):
-				prices[7].setText("PP Duration\nLevel: MAXED");
-				break;
-			}
-		}
-	}
-
-	@Override
+	// Called on screen resize
 	public void resize(int width, int height) {
+		// Initializes the stage
 		if (stage == null)
 			stage = new Stage(width, height, true);
 		stage.clear();
 		Gdx.input.setInputProcessor(stage);
+
+		// Setup the labels
 		LabelStyle ls = new LabelStyle(fontW, Color.WHITE);
 		if (bytes[5] < 6)
 			prices[4] = new Label("Health\nLevel: " + (int) bytes[5] + " = $"
@@ -300,6 +232,8 @@ public class ShopScreen implements Screen {
 		title = new Label("SHOP", ls);
 		title.setPosition(360, 450);
 		title.setAlignment(Align.center);
+
+		// Read the money
 		String c;
 		if (cashLocation.exists())
 			c = cashLocation.readString();
@@ -307,6 +241,8 @@ public class ShopScreen implements Screen {
 			cashLocation.writeString("0", false);
 			c = cashLocation.readString();
 		}
+
+		// Setup the money label
 		money = Integer.parseInt(c);
 		if (Integer.parseInt(c) % 100 == 0)
 			cash = new Label("Cash: $" + (Float.parseFloat(c) / 100) + "0", ls);
@@ -316,30 +252,43 @@ public class ShopScreen implements Screen {
 			cash = new Label("Cash: $" + (Float.parseFloat(c) / 100), ls);
 		cash.setPosition(0, 450);
 		cash.setAlignment(Align.center);
+
+		// Adds labels to stage
 		stage.addActor(cash);
 		stage.addActor(title);
+
+		// Setup the no money label
 		noMoney = new Label(noCash.getMessage(), ls);
 		noMoney.setY(200);
 		noMoney.setWidth(width);
 		noMoney.setAlignment(Align.center);
 	}
 
-	@Override
+	// Called on screen show
 	public void show() {
+		// Initializes the batch
 		batch = new SpriteBatch();
+
+		// Setup the music
 		song = Gdx.audio.newMusic(Gdx.files
 				.internal("data/sound/music/Shop.mp3"));
 		song.play();
 		song.setLooping(true);
+
+		// Retrieves the fonts
 		fontW = new BitmapFont(Gdx.files.internal("data/chilly.fnt"), false);
-		background = game.getAssetManager().get(BACKGROUND_TEXTURES, TextureAtlas.class);
-		shop = game.getAssetManager().get(SHOP_TEXTURES, TextureAtlas.class);
+
+		// Retrieves the textures
+		background = BoneyGame.getAssetManager().get(BACKGROUND_TEXTURES,
+				TextureAtlas.class);
+		shop = BoneyGame.getAssetManager().get(SHOP_TEXTURES,
+				TextureAtlas.class);
+
+		// Setup sprites
 		imgBack = shop.createSprite("back");
 		imgBack.setX(Gdx.graphics.getWidth() - 40);
 		imgBack.setY(Gdx.graphics.getHeight() - 40);
-
 		lawnBackground = background.createSprite("background-main");
-
 		lawnBackground.setPosition(0, 0);
 		lawnBackground.setColor(1, 1, 1, 0.3f);
 		boxes[4] = shop.createSprite("storeNA");
@@ -362,20 +311,20 @@ public class ShopScreen implements Screen {
 			s.setScale(0.75f);
 	}
 
-	@Override
+	// Called on hide
 	public void hide() {
 		dispose();
 	}
 
-	@Override
+	// Called on pause
 	public void pause() {
 	}
 
-	@Override
+	// Called on resume
 	public void resume() {
 	}
 
-	@Override
+	// Disposes of disposable assets
 	public void dispose() {
 		batch.dispose();
 		fontW.dispose();
@@ -383,4 +332,129 @@ public class ShopScreen implements Screen {
 		song.dispose();
 	}
 
+	// Updates the stats and money
+	private void update(int i) {
+		// Case for which stat is being updated
+		switch (i) {
+		case (0):
+			i = 4;
+			break;
+		case (1):
+			i = 5;
+			break;
+		case (2):
+			i = 6;
+			break;
+		case (3):
+			i = 7;
+			break;
+		case (4):
+			i = 0;
+			break;
+		case (5):
+			i = 1;
+			break;
+		case (6):
+			i = 2;
+			break;
+		case (7):
+			i = 3;
+			break;
+		}
+		// If that stat is within range
+		if (bytes[locos[i]] < 6) {
+			if (money >= cashPrice[i]) {
+				money -= cashPrice[i];
+				bytes[locos[i]] += 1;
+			}
+			// Save the files
+			byte b[] = new byte[bytes.length];
+			for (int x = 0; x < bytes.length; x++)
+				b[x] = (byte) bytes[x];
+			saveLocation.writeBytes(b, false);
+			cashLocation.writeString("" + money, false);
+			// Update the text
+			switch (i) {
+			case (0):
+				prices[0].setText("PP Frequency\nLevel: " + (int) bytes[4]
+						+ " = $" + ((int) bytes[4] * 20) * 1.00 + "0");
+				break;
+			case (1):
+				prices[1].setText("Score Bonus\nLevel: " + (int) bytes[7]
+						+ " = $" + ((int) bytes[7] * 20) * 1.00 + "0");
+				break;
+			case (2):
+				prices[2].setText("Dog Repelent\nLevel: " + (int) bytes[6]
+						+ " = $" + ((int) bytes[6] * 20) * 1.00 + "0");
+				break;
+			case (3):
+				prices[3].setText("Discount\nLevel: " + (int) (bytes[9] + 1)
+						+ " = $" + ((int) (bytes[9] + 1) * 20) * 1.00 + "0");
+				break;
+			case (4):
+				prices[4].setText("Health\nLevel: " + (int) bytes[5] + " = $"
+						+ ((int) bytes[5] * 20) * 1.00 + "0");
+				break;
+			case (5):
+				prices[5].setText("Speed\nLevel: " + (int) bytes[1] + " = $"
+						+ ((int) bytes[1] * 20) * 1.00 + "0");
+				break;
+			case (6):
+				prices[6].setText("Cash Bonus\nLevel: " + (int) bytes[2]
+						+ " = $" + ((int) bytes[2] * 20) * 1.00 + "0");
+				break;
+			case (7):
+				prices[7].setText("PP Duration\nLevel: " + (int) bytes[3]
+						+ " = $" + ((int) bytes[3] * 20) * 1.00 + "0");
+				break;
+			}
+
+			// Re-read the cash
+			String c;
+			if (cashLocation.exists())
+				c = cashLocation.readString();
+			else {
+				cashLocation.writeString("0", false);
+				c = cashLocation.readString();
+			}
+
+			// Update the label
+			money = Integer.parseInt(c);
+			if (money % 100 == 0)
+				cash.setText("Cash: $" + (Float.parseFloat(c) / 100) + ".00");
+			else if (Integer.parseInt(c) % 10 == 0)
+				cash.setText("Cash: $" + (Float.parseFloat(c) / 100) + "0");
+			else
+				cash.setText("Cash: $" + (Float.parseFloat(c) / 100));
+		} else {
+			// If the stat is maxed
+			switch (i) {
+			case (0):
+				prices[0].setText("PP Frequency\nLevel: MAXED");
+				break;
+			case (1):
+				prices[1].setText("Score Bonus\nLevel: MAXED");
+				break;
+			case (2):
+				prices[2].setText("Dog Repelent\nLevel: MAXED");
+				break;
+			case (3):
+				prices[3].setText("Discount\nLevel: MAXED");
+				break;
+			case (4):
+				prices[4].setText("Health\nLevel: MAXED");
+				break;
+			case (5):
+				prices[5].setText("Speed\nLevel: MAXED");
+				break;
+			case (6):
+				prices[6].setText("Cash Bonus\nLevel: MAXED");
+				break;
+			case (7):
+				prices[7].setText("PP Duration\nLevel: MAXED");
+				break;
+			}
+		}
+	}
 }
+// Hunter Heidenreich 2014

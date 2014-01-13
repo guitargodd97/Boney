@@ -1,12 +1,25 @@
 package com.boney.desura.other;
 
+//---------------------------------------------------------------------------------------------
+//
+//Boxes.java
+//Last Revised: 1/12/2014
+//Author: Hunter Heidenreich
+//Product of: Day Ja Voo Games
+//
+//---------------------------------------------------------------------------------------------
+//Summary of Class:
+//
+//This object controls simple messages such as pause, intros, etc.
+//
+//---------------------------------------------------------------------------------------------
 public class Boxes {
-	int type, introStage;
-	String message, introMessages[] = new String[4];
-	boolean show;
+	private int introStage;
+	private String message;
+	private String introMessages[] = new String[4];
 
+	//Initializes the Boxes
 	public Boxes(int type) {
-		this.type = type;
 		switch (type) {
 		// Pause
 		case (0):
@@ -36,6 +49,7 @@ public class Boxes {
 		introMessages[3] = "Dobermans are fast and tricky.\nThey'll turn around when you least expect!";
 	}
 
+	//Updates the intro
 	public String updateIntro() {
 		String s = "";
 		s = introMessages[introStage] + "\n\n" + message;
@@ -43,7 +57,9 @@ public class Boxes {
 		return s;
 	}
 
+	//Returns a message
 	public String getMessage() {
 		return message;
 	}
 }
+//Hunter Heidenreich 2014

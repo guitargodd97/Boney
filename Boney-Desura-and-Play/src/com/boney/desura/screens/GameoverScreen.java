@@ -25,80 +25,88 @@ import com.boney.desura.BoneyGame;
 //---------------------------------------------------------------------------------------------
 //
 //GameoverScreen.java
-//Last Revised: 9/12/2013
+//Last Revised: 1/12/2014
 //Author: Hunter Heidenreich
 //Product of: Day Ja Voo Games
 //
 //---------------------------------------------------------------------------------------------
 //Summary of Class:
 //
-//This class is the Credit Screen or the "About Us."  
+//This class is the Gameover Screen that a player is sent to when they lose/win.
 //
 //---------------------------------------------------------------------------------------------
 
 public class GameoverScreen implements Screen {
-	BoneyGame game;
-	ShapeRenderer render;
-	Vector2 levelLocation, levelSize;
-	BitmapFont numbers;
-	Stage stage;
-	Label label;
-	SpriteBatch batch;
-	Sprite background;
-	private BitmapFont fontW;
-	private Music song;
-	int score, level, stageNum, dogNum;
-	double cash;
-	boolean levelCompleted;
 	public static final String BACKGROUND_TEXTURES = "data/images/background.atlas";
 	public static final String BUTTON_TEXTURES = "data/images/button.pack";
-	private TextureAtlas atlas, buttAtlas;
-	int buttonWidth, buttonHeight, buttonY;
-	Skin skin;
-	TextButton startButton, quitButton;
+	private BitmapFont fontW;
 	private BitmapFont b;
+	private boolean levelCompleted;
+	private BoneyGame game;
+	private int score;
+	private int level;
+	private int stageNum;
+	private int dogNum;
+	private int buttonWidth;
+	private int buttonHeight;
+	private int buttonY;
+	private Label label;
+	private Music song;
+	private ShapeRenderer render;
+	private Skin skin;
+	private Sprite background;
+	private SpriteBatch batch;
+	private Stage stage;
+	private TextureAtlas atlas;
+	private TextureAtlas buttAtlas;
+	private TextButton startButton;
+	private TextButton quitButton;
+	private Vector2 levelLocation;
+	private Vector2 levelSize;
 
-	// CreditsScreen()
-	//
-	// Constructor initializes things for the screen
-	//
-	// Called by the previous screen
+	// Initializes the GameoverScreen
 	public GameoverScreen(BoneyGame game, boolean end, double[] data) {
 		this.game = game;
+
+		// Parse the data from previous screen
 		levelCompleted = end;
-		render = new ShapeRenderer();
-		batch = new SpriteBatch();
+		score = (int) data[0];
+		level = (int) data[2];
+		stageNum = (int) data[3];
+		dogNum = (int) data[4];
+
+		// Setup location for displaying data
 		levelSize = new Vector2(500, 300);
 		levelLocation = new Vector2(
 				(Gdx.graphics.getWidth() - levelSize.x) / 2,
 				(Gdx.graphics.getHeight() - levelSize.y) / 2);
-		score = (int) data[0];
-		cash = data[1];
-		level = (int) data[2];
-		stageNum = (int) data[3];
-		dogNum = (int) data[4];
+
+		// Setup button sizes and locations
 		buttonWidth = 200;
 		buttonHeight = 75;
 		buttonY = 15;
 	}
 
-	// render()
-	//
-	// Draws what is necessary/functions as an update
-	//
-	// Naturally called
+	// Updates the screen
 	public void render(float delta) {
-		if (game.getAssetManager().update()) {
+		if (BoneyGame.getAssetManager().update()) {
+			// Clear the screen
 			Gdx.gl.glClearColor(0, 0, 0, 1);
 			Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+
+			// Draw shapes
 			render.begin(ShapeType.Filled);
 			render.setColor(0.1f, 0.1f, 0.1f, 1f);
 			render.rect(levelLocation.x, levelLocation.y, levelSize.x,
 					levelSize.y);
 			render.end();
+
+			// Draw textures from batch
 			batch.begin();
 			background.draw(batch);
 			batch.end();
+
+			// Update and draw the stage
 			stage.act(delta);
 			batch.begin();
 			stage.draw();
@@ -106,21 +114,22 @@ public class GameoverScreen implements Screen {
 		}
 	}
 
-	// resize()
-	//
-	// Intializes more things after the screen has started
-	//
-	// Calls when the window is resized
+	// Called when the screen is resized
 	public void resize(int width, int height) {
+		// Initialize and clear the stage
 		if (stage == null)
 			stage = new Stage(width, height, true);
 		stage.clear();
 		Gdx.input.setInputProcessor(stage);
+
+		// Setup the fonts for the buttons and labels
 		LabelStyle ls = new LabelStyle(fontW, Color.WHITE);
 		TextButtonStyle tbStyle = new TextButtonStyle();
 		tbStyle.up = skin.getDrawable("buttonnormal");
 		tbStyle.down = skin.getDrawable("buttonpressed");
 		tbStyle.font = b;
+
+		// Setup the start button
 		startButton = new TextButton("Again", tbStyle);
 		startButton.setWidth(buttonWidth);
 		startButton.setHeight(buttonHeight);
@@ -139,6 +148,7 @@ public class GameoverScreen implements Screen {
 			}
 		});
 
+		// Setup the quit button
 		quitButton = new TextButton("Menu", tbStyle);
 		quitButton.setWidth(buttonWidth);
 		quitButton.setHeight(buttonHeight);
@@ -157,6 +167,7 @@ public class GameoverScreen implements Screen {
 			}
 		});
 
+		// If player won the level
 		if (levelCompleted) {
 			if (stageNum <= 3)
 				label = new Label("Level: " + level + "." + stageNum
@@ -178,69 +189,65 @@ public class GameoverScreen implements Screen {
 				label = new Label("Dogs Dodged: " + dogNum + "\nPoints: "
 						+ score + "\nLevel failed......", ls);
 		}
+
+		// Position the text
 		label.setX(0);
 		label.setY(levelLocation.y + (levelSize.y / 2) - 35);
 		label.setWidth(width);
 		label.setAlignment(Align.center);
+
+		// Add labels and buttons to the stage
 		stage.addActor(label);
 		stage.addActor(quitButton);
 		stage.addActor(startButton);
 	}
 
-	// show()
-	//
-	// Initializes more things for drawing
-	//
-	// Called naturally when the picture loads
+	// Called on window show
 	public void show() {
-		skin = new Skin();
+		// Initialize drawing objects
+		render = new ShapeRenderer();
 		batch = new SpriteBatch();
-		atlas = game.getAssetManager().get(BACKGROUND_TEXTURES, TextureAtlas.class);
-		buttAtlas = game.getAssetManager().get(BUTTON_TEXTURES, TextureAtlas.class);
+
+		// Retrieve textures
+		atlas = BoneyGame.getAssetManager().get(BACKGROUND_TEXTURES,
+				TextureAtlas.class);
+		buttAtlas = BoneyGame.getAssetManager().get(BUTTON_TEXTURES,
+				TextureAtlas.class);
+
+		// Initialize button skins and sprites
+		skin = new Skin();
 		skin.addRegions(buttAtlas);
 		background = atlas.createSprite("background-main");
 		background.setPosition(0, 0);
 		background.setColor(1, 1, 1, 0.3f);
+
+		// Initialize fonts
 		fontW = new BitmapFont(Gdx.files.internal("data/chilly.fnt"), false);
 		b = new BitmapFont(Gdx.files.internal("data/boneyfontblack.fnt"), false);
+
+		// Intialize music
 		song = Gdx.audio.newMusic(Gdx.files
 				.internal("data/sound/music/Gameover.mp3"));
 		song.setLooping(true);
 		song.play();
 	}
 
-	// hide()
-	//
-	// Not really using this
-	//
-	// Naturally called
+	// Called on hide
 	public void hide() {
 		dispose();
 	}
 
-	// pause()
-	//
-	// Not really using this
-	//
-	// Naturally called
+	// Called on pause
 	public void pause() {
 
 	}
 
-	// resume()
-	//
-	// Not really using this
-	//
-	// Naturally called
+	// Called on resume
 	public void resume() {
 
 	}
 
-	// dispose()
-	//
-	// Disposes of resources
-	//
-	// Naturally called at the end of the screen
+	// Disposes of disposable resources
 	public void dispose() {
 		render.dispose();
 		stage.dispose();
@@ -251,4 +258,4 @@ public class GameoverScreen implements Screen {
 		skin.dispose();
 	}
 }
-// Hunter Heidenreich 2013
+// Hunter Heidenreich 2014

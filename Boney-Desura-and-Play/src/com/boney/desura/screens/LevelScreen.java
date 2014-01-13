@@ -38,7 +38,7 @@ import com.boney.desura.other.Boxes;
 //---------------------------------------------------------------------------------------------
 //
 //LevelScreen.java
-//Last Revised: 9/12/2013
+//Last Revised: 1/12/2013
 //Author: Hunter Heidenreich
 //Product of: Day Ja Voo Games
 //
@@ -50,47 +50,24 @@ import com.boney.desura.other.Boxes;
 //---------------------------------------------------------------------------------------------
 
 public class LevelScreen implements Screen {
-	// Variables
-
-	// Numbers
-	float jumpRadius, jumpX, jumpY, crouchRadius, crouchX, crouchY, score;
-	private Array<Integer> waves = new Array<Integer>();
-	int waveIndex, level, stageNum, introBox, introState, boxWidth, boxHeight,
-			boxX, boxY;
-	int powerTimer, powerLimit;
-	int buttonWidth, buttonHeight, buttonY;
-	String introText[] = new String[5];
 	public static final String BACKGROUND_TEXTURES = "data/images/background.atlas";
 	public static final String BONEY_SPRITE_SHEET = "data/images/boney.atlas";
 	public static final String DOGS_SPRITE_SHEET = "data/images/dog.atlas";
 	public static final String LEVEL_TEXTURES = "data/images/level.atlas";
 	public static final String BUTTON_TEXTURES = "data/images/button.pack";
-	// Objects
-	SpriteBatch batch;
-	TextureAtlas background, boneySheet, dog, levelSheet;
-	BoneyGame game;
-	Stage stage, pStage;
-	ShapeRenderer render;
-	Rectangle jumpRect, crouchRect;
-	Boney boney;
-	Sprite back, jumpUp, jumpDown, crouchUp, crouchDown;
-	Sprite[] dogs = new Sprite[3];
-	Boxes intro, pause;
-	boolean showIntroBox;
+	private final Array<Powerup> activePowerups = new Array<Powerup>();
+	private final Array<GenericDog> activeDogs = new Array<GenericDog>();
 	private final Pool<SmallDog> smallDogPool = new Pool<SmallDog>() {
-		@Override
 		protected SmallDog newObject() {
 			return new SmallDog();
 		}
 	};
 	private final Pool<MediumDog> medDogPool = new Pool<MediumDog>() {
-		@Override
 		protected MediumDog newObject() {
 			return new MediumDog();
 		}
 	};
 	private final Pool<BigDog> bigDogPool = new Pool<BigDog>() {
-		@Override
 		protected BigDog newObject() {
 			return new BigDog();
 		}
@@ -100,41 +77,91 @@ public class LevelScreen implements Screen {
 			return new Powerup();
 		}
 	};
-	private Music song;
-	private final Array<Powerup> activePowerups = new Array<Powerup>();
-	private final Array<GenericDog> activeDogs = new Array<GenericDog>();
-	private BitmapFont fontW;
-	private Label label, moneyLabel, pntLabel, pauseLabel, introLabel;
-	private int enterP, pP;
-	private boolean paused, survival;
-	TextButton startButton, quitButton;
-	private Skin skin;
-	private TextureAtlas buttAtlas;
+	private Array<Integer> waves = new Array<Integer>();
 	private BitmapFont b;
+	private BitmapFont fontW;
+	private boolean paused;
+	private boolean showIntroBox;
+	private boolean survival;
+	private Boney boney;
+	private BoneyGame game;
+	private Boxes intro;
+	private Boxes pause;
+	private float jumpRadius;
+	private float jumpX;
+	private float jumpY;
+	private float crouchRadius;
+	private float crouchX;
+	private float crouchY;
+	private float score;
+	private int waveIndex;
+	private int level;
+	private int stageNum;
+	private int introState;
+	private int powerTimer;
+	private int powerLimit;
+	private int buttonWidth;
+	private int buttonHeight;
+	private int enterP;
+	private int pP;
+	private int buttonY;
+	private Label label;
+	private Label moneyLabel;
+	private Label pntLabel;
+	private Label pauseLabel;
+	private Label introLabel;
+	private Music song;
+	private Rectangle jumpRect;
+	private Rectangle crouchRect;
+	private ShapeRenderer render;
+	private Skin skin;
+	private Sprite back;
+	private Sprite jumpUp;
+	private Sprite jumpDown;
+	private Sprite crouchUp;
+	private Sprite crouchDown;
+	private SpriteBatch batch;
+	private Stage stage;
+	private Stage pStage;
+	private TextureAtlas background;
+	private TextureAtlas boneySheet;
+	private TextureAtlas dog;
+	private TextureAtlas levelSheet;
+	private TextureAtlas buttAtlas;
+	private TextButton startButton;
+	private TextButton quitButton;
 
-	// LevelScreen()
-	//
-	// Constructor for initialization
-	//
-	// Called on creation
+	// Initializes the LevelScreen
 	public LevelScreen(BoneyGame game, int l, int s) {
 		this.game = game;
-		render = new ShapeRenderer();
+
+		// Sets the jump buttons
 		jumpRadius = 32;
-		score = 0;
-		introState = 0;
 		crouchRadius = jumpRadius;
 		jumpX = 35;
 		jumpY = 35;
-		powerTimer = 0;
-		powerLimit = 300;
 		crouchX = Gdx.graphics.getWidth() - jumpX;
 		crouchY = jumpY;
 		jumpRect = new Rectangle(0, 410, jumpRadius * 2, jumpRadius * 2);
 		crouchRect = new Rectangle(736, 410, crouchRadius * 2, crouchRadius * 2);
+
+		// Sets the other buttons
+		buttonWidth = 200;
+		buttonHeight = 75;
+		buttonY = 15;
+
+		// Sets the score
+		score = 0;
+
+		// Sets the intro
+		introState = 0;
+
+		// Sets the game to unpaused
+		paused = false;
+
+		// Sets the waves based on stage and level
 		level = l;
 		stageNum = s;
-		paused = false;
 		if (level == 1 && stageNum == 1) {
 			showIntroBox = true;
 			for (int i = 0; i < 9; i++) {
@@ -158,163 +185,219 @@ public class LevelScreen implements Screen {
 			survival = false;
 		}
 		waveIndex = 0;
+
+		// Initializes the images
 		initializeImages();
+
+		// Setup boney
 		boney = new Boney();
 		boney.setState(2);
+
+		// Setup the dogs
 		GenericDog dog = whichDog();
 		dog.init();
 		activeDogs.add(dog);
+
+		// Sets up the powerup limits
+		powerTimer = 0;
+		powerLimit = 300;
 		Powerup p = powerPool.obtain();
 		p.init();
 		activePowerups.add(p);
+
+		// Sets up the info boxes
 		pause = new Boxes(0);
 		intro = new Boxes(1);
-		boxWidth = (int) ((int) Gdx.graphics.getWidth() * 0.85);
-		boxHeight = (int) ((int) Gdx.graphics.getHeight() * 0.85);
-		boxX = (int) ((int) Gdx.graphics.getWidth() - boxWidth) / 2;
-		boxY = (int) ((int) Gdx.graphics.getHeight() - boxHeight) / 2;
-		buttonWidth = 200;
-		buttonHeight = 75;
-		buttonY = 15;
 	}
 
-	private GenericDog whichDog() {
-		switch (waves.get(waveIndex)) {
-		case (0):
-			return smallDogPool.obtain();
-		case (1):
-			return medDogPool.obtain();
-		case (2):
-			return bigDogPool.obtain();
-		}
-		return null;
-	}
-
-	@Override
+	// Updates the screen
 	public void render(float delta) {
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-		batch.begin();
-		back.draw(batch);
-		boney.draw(batch);
-		for (GenericDog d : activeDogs)
-			d.draw(batch);
+		if (BoneyGame.getAssetManager().update()) {
+			// Clears the screen
+			Gdx.gl.glClearColor(0, 0, 0, 1);
+			Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 
-		if (game.getApp() == ApplicationType.Android) {
-			jumpUp.draw(batch);
-			crouchUp.draw(batch);
-			if (Gdx.input.isTouched()) {
-				if (jumpRect.contains(Gdx.input.getX(), Gdx.input.getY()))
-					jumpDown.draw(batch);
-				if (crouchRect.contains(Gdx.input.getX(), Gdx.input.getY()))
-					crouchDown.draw(batch);
+			// Draws the batch
+			batch.begin();
+			back.draw(batch);
+			boney.draw(batch);
+			for (GenericDog d : activeDogs)
+				d.draw(batch);
+
+			// Draws Android buttons if needed
+			if (game.getApp() == ApplicationType.Android) {
+				jumpUp.draw(batch);
+				crouchUp.draw(batch);
+				if (Gdx.input.isTouched()) {
+					if (jumpRect.contains(Gdx.input.getX(), Gdx.input.getY()))
+						jumpDown.draw(batch);
+					if (crouchRect.contains(Gdx.input.getX(), Gdx.input.getY()))
+						crouchDown.draw(batch);
+				}
 			}
-		}
-		if (showIntroBox)
-			doIntro();
-		else if (boney.getLife() && !paused) {
-			boney.move(jumpRect, crouchRect);
-			for (Powerup p : activePowerups)
-				p.draw(batch);
-			for (int i = 0; i < activeDogs.size; i++) {
-				activeDogs.get(i).move();
-				if (activeDogs.get(i).getRect().overlaps(boney.getRect()))
-					boney.loseLive();
-				if (activeDogs.get(i).getDone()) {
-					score += activeDogs.get(i).getWorth()
-							* boney.getScoreMultiplier();
-					activeDogs.get(i).reset();
-					activeDogs.removeIndex(i);
-					if (waveIndex < waves.size - 1 || survival) {
-						if (survival && waveIndex > 100) {
-							waveIndex = 0;
-							waves.clear();
-							Random ran = new Random();
-							for (int is = 0; is < 100; is++)
-								waves.add(ran.nextInt(3));
+
+			// If the game is explaining how to be played
+			if (showIntroBox)
+				doIntro();
+			// If not paused and Boney is alive
+			else if (boney.getLife() && !paused) {
+				// Move Boney
+				boney.move(jumpRect, crouchRect);
+
+				// Update the powerups
+				for (Powerup p : activePowerups)
+					p.draw(batch);
+
+				// Update the dogs
+				for (int i = 0; i < activeDogs.size; i++) {
+					activeDogs.get(i).move();
+
+					// If a dog touches Boney
+					if (activeDogs.get(i).getRect().overlaps(boney.getRect()))
+						boney.loseLive();
+
+					// If a dog is offscreen
+					if (activeDogs.get(i).getDone()) {
+						// Give score and remove the dog
+						score += activeDogs.get(i).getWorth()
+								* boney.getScoreMultiplier();
+						activeDogs.get(i).reset();
+						activeDogs.removeIndex(i);
+
+						// If things should keep going
+						if (waveIndex < waves.size - 1 || survival) {
+							// If this is survival and we are exceeding 100 dogs
+							if (survival && waveIndex > 100) {
+								// Restart
+								waveIndex = 0;
+								waves.clear();
+								Random ran = new Random();
+								for (int is = 0; is < 100; is++)
+									waves.add(ran.nextInt(3));
+							}
+
+							// Increase the wave number
+							waveIndex++;
+
+							// Create a new dog
+							GenericDog g = whichDog();
+							g.init();
+							activeDogs.add(g);
+
+							// Exit the loop
+							i = 500;
+
+							// Update hthe label
+							if (!survival)
+								label.setText("Stage: " + level + "."
+										+ stageNum + "\nDogs: "
+										+ (waveIndex + 1) + "/" + waves.size);
+							else
+								label.setText("Stage: SURVIVAL.\nDogs: "
+										+ (waveIndex + 1));
+						} else {
+							// If the game is completed, save the stats
+							if (stageNum < 2)
+								boney.saveStat((level - 1) * 3 + stageNum);
+							else
+								boney.saveStat((level - 1) * 3 + stageNum - 1);
+
+							// Onto the next screen
+							game.setScreen(new GameoverScreen(game, true,
+									collectData()));
 						}
-						waveIndex++;
-						GenericDog g = whichDog();
-						g.init();
-						activeDogs.add(g);
-						i = 500;
-						if (!survival)
-							label.setText("Stage: " + level + "." + stageNum
-									+ "\nDogs: " + (waveIndex + 1) + "/"
-									+ waves.size);
-						else
-							label.setText("Stage: SURVIVAL.\nDogs: "
-									+ (waveIndex + 1));
-					} else {
-						if (stageNum < 2)
-							boney.saveStat((level - 1) * 3 + stageNum);
-						else
-							boney.saveStat((level - 1) * 3 + stageNum - 1);
-						game.setScreen(new GameoverScreen(game, true,
-								collectData()));
 					}
 				}
-			}
-			for (int i = 0; i < activePowerups.size; i++) {
-				if (activePowerups.get(i).getRect().overlaps(boney.getRect())) {
-					boney.applyEffect(activePowerups.get(i).getType());
-					activePowerups.get(i).reset();
-					activePowerups.removeIndex(i);
-					i = 500;
-					if ((boney.getCash() * 100) % 10 == 0)
-						moneyLabel.setText("Cash: $" + boney.getCash() + "0");
-					else
-						moneyLabel.setText("Cash: $" + boney.getCash());
+
+				// Check for powerup overlap
+				for (int i = 0; i < activePowerups.size; i++) {
+					if (activePowerups.get(i).getRect()
+							.overlaps(boney.getRect())) {
+
+						// Give Boney the effect
+						boney.applyEffect(activePowerups.get(i).getType());
+
+						// Remove the powerup
+						activePowerups.get(i).reset();
+						activePowerups.removeIndex(i);
+
+						// Exit the loop
+						i = 500;
+
+						// Update the cash
+						if ((boney.getCash() * 100) % 10 == 0)
+							moneyLabel.setText("Cash: $" + boney.getCash()
+									+ "0");
+						else
+							moneyLabel.setText("Cash: $" + boney.getCash());
+					}
 				}
+
+				// Increase the powerup timer
+				if (powerTimer < powerLimit)
+					powerTimer++;
+				else {
+					// Reset the powerup
+					powerTimer = 0;
+					Powerup p = powerPool.obtain();
+					p.init();
+					activePowerups.add(p);
+				}
+
+				// Increase the score by seconds
+				score += .1f * boney.getScoreMultiplier();
+
+				// Update the label
+				pntLabel.setText("Score: " + (int) score);
+
+				// Check if Boney is alive
+				if (!boney.getLife())
+					gameover();
+
+				// Check if game should get paused
+				if (getKeyUp(Input.Keys.P)) {
+					paused = true;
+					Gdx.input.setInputProcessor(pStage);
+				}
+				if (pP == 0 && Gdx.input.isKeyPressed(Input.Keys.P))
+					pP++;
+				else if (pP == 1 && !Gdx.input.isKeyPressed(Input.Keys.P))
+					pP++;
+			} else {
+				// Check if game should get unpaused
+				pauseLabel.draw(batch, 1);
+				if (getKeyUp(Input.Keys.P))
+					paused = false;
+				if (pP == 0 && Gdx.input.isKeyPressed(Input.Keys.P))
+					pP++;
+				else if (pP == 1 && !Gdx.input.isKeyPressed(Input.Keys.P))
+					pP++;
 			}
-			if (powerTimer < powerLimit)
-				powerTimer++;
-			else {
-				powerTimer = 0;
-				Powerup p = powerPool.obtain();
-				p.init();
-				activePowerups.add(p);
-			}
-			score += .1f * boney.getScoreMultiplier();
-			pntLabel.setText("Score: " + (int) score);
-			if (!boney.getLife())
-				gameover();
-			if (getKeyUp(Input.Keys.P)) {
-				paused = true;
-				Gdx.input.setInputProcessor(pStage);
-			}
-			if (pP == 0 && Gdx.input.isKeyPressed(Input.Keys.P))
-				pP++;
-			else if (pP == 1 && !Gdx.input.isKeyPressed(Input.Keys.P))
-				pP++;
-		} else {
-			pauseLabel.draw(batch, 1);
-			if (getKeyUp(Input.Keys.P))
-				paused = false;
-			if (pP == 0 && Gdx.input.isKeyPressed(Input.Keys.P))
-				pP++;
-			else if (pP == 1 && !Gdx.input.isKeyPressed(Input.Keys.P))
-				pP++;
+			batch.end();
+
+			// Determind which stage to act and draw
+			if (!paused)
+				stage.act(delta);
+			else
+				pStage.act(delta);
+			batch.begin();
+			if (!paused)
+				stage.draw();
+			else
+				pStage.draw();
+			batch.end();
+
+			// Draw shapes
+			render.begin(ShapeType.Filled);
+			for (int i = 0; i < boney.returnLives(); i++)
+				render.rect((25 * i) + 15, 25, 15, 15);
+			render.end();
 		}
-		batch.end();
-		if (!paused)
-			stage.act(delta);
-		else
-			pStage.act(delta);
-		batch.begin();
-		if (!paused)
-			stage.draw();
-		else
-			pStage.draw();
-		batch.end();
-		render.begin(ShapeType.Filled);
-		for (int i = 0; i < boney.returnLives(); i++)
-			render.rect((25 * i) + 15, 25, 15, 15);
-		render.end();
 	}
 
-	@Override
+	// Called on screen resize
 	public void resize(int width, int height) {
+		// Initialize the stages
 		if (stage == null)
 			stage = new Stage(width, height, true);
 		stage.clear();
@@ -325,6 +408,8 @@ public class LevelScreen implements Screen {
 		pStage.clear();
 		if (paused)
 			Gdx.input.setInputProcessor(pStage);
+
+		// Setup the labels
 		LabelStyle ls = new LabelStyle(fontW, Color.WHITE);
 		if (!survival)
 			label = new Label("Stage: " + level + "." + stageNum + "\nDogs: "
@@ -348,21 +433,31 @@ public class LevelScreen implements Screen {
 		pntLabel.setY(Gdx.graphics.getHeight() - 30);
 		pntLabel.setWidth(width);
 		pntLabel.setAlignment(Align.right);
+
+		// Add labels to stage
 		stage.addActor(label);
 		stage.addActor(moneyLabel);
 		stage.addActor(pntLabel);
+
+		// Setup pause labels
 		pauseLabel = new Label(pause.getMessage(), ls);
 		pauseLabel.setY(200);
 		pauseLabel.setWidth(width);
 		pauseLabel.setAlignment(Align.center);
+
+		// Setup intro label
 		introLabel = new Label(intro.updateIntro(), ls);
 		introLabel.setY(200);
 		introLabel.setWidth(width);
 		introLabel.setAlignment(Align.center);
+
+		// Setup buttons
 		TextButtonStyle tbStyle = new TextButtonStyle();
 		tbStyle.up = skin.getDrawable("buttonnormal");
 		tbStyle.down = skin.getDrawable("buttonpressed");
 		tbStyle.font = b;
+
+		// Setup start button
 		startButton = new TextButton("Resume", tbStyle);
 		startButton.setWidth(buttonWidth);
 		startButton.setHeight(buttonHeight);
@@ -382,6 +477,7 @@ public class LevelScreen implements Screen {
 			}
 		});
 
+		// Setup quit button
 		quitButton = new TextButton("Menu", tbStyle);
 		quitButton.setWidth(buttonWidth);
 		quitButton.setHeight(buttonHeight);
@@ -399,39 +495,52 @@ public class LevelScreen implements Screen {
 				game.setScreen(new MenuScreen(game));
 			}
 		});
+
+		// Add buttons to paused stage
 		pStage.addActor(startButton);
 		pStage.addActor(quitButton);
 
 	}
 
-	@Override
+	// Called on screen show
 	public void show() {
+		// Setup drawing objects
+		render = new ShapeRenderer();
 		batch = new SpriteBatch();
+
+		// Grab textures
+		buttAtlas = BoneyGame.getAssetManager().get(BUTTON_TEXTURES,
+				TextureAtlas.class);
+
+		// Setup button textures
 		skin = new Skin();
-		buttAtlas = game.getAssetManager().get(BUTTON_TEXTURES, TextureAtlas.class);
 		skin.addRegions(buttAtlas);
+
+		// Grab fonts
 		b = new BitmapFont(Gdx.files.internal("data/boneyfontblack.fnt"), false);
 		fontW = new BitmapFont(Gdx.files.internal("data/chilly.fnt"), false);
+
+		// Setup music
 		song = Gdx.audio.newMusic(Gdx.files
 				.internal("data/sound/music/Lawn.mp3"));
 		song.setLooping(true);
 		song.play();
 	}
 
-	@Override
+	// Called on hide
 	public void hide() {
 		dispose();
 	}
 
-	@Override
+	// Called on pause
 	public void pause() {
 	}
 
-	@Override
+	// Called on resume
 	public void resume() {
 	}
 
-	@Override
+	// Disposes of disposable items
 	public void dispose() {
 		render.dispose();
 		skin.dispose();
@@ -443,33 +552,25 @@ public class LevelScreen implements Screen {
 		song.dispose();
 	}
 
-	public void gameover() {
+	// Sets the screen to gameover
+	private void gameover() {
 		game.setScreen(new GameoverScreen(game, false, collectData()));
 	}
 
-	public void doIntro() {
+	// Displays intro information
+	private void doIntro() {
+		// If we are on the intro level
 		if (stageNum == 1 && level == 1) {
-
-			switch (introState) {
-			case (0):
-
-				break;
-			case (1):
-
-				break;
-			case (2):
-
-				break;
-			case (3):
-
-				break;
-			case (4):
+			// End of tutorial
+			if (introState == 4)
 				showIntroBox = false;
-				break;
-			}
+
+			// Draw the tutorial
 			introLabel.draw(batch, 1);
 		} else
 			showIntroBox = false;
+
+		// Increase the intro state
 		if (getKeyUp(Input.Keys.ANY_KEY) || Gdx.input.justTouched()) {
 			introState++;
 			if (introState < 4)
@@ -482,29 +583,38 @@ public class LevelScreen implements Screen {
 
 	}
 
-	public void initializeImages() {
-		background = game.getAssetManager().get(BACKGROUND_TEXTURES, TextureAtlas.class);
-		dog = game.getAssetManager().get(DOGS_SPRITE_SHEET, TextureAtlas.class);
-		boneySheet = game.getAssetManager().get(BONEY_SPRITE_SHEET, TextureAtlas.class);
-		levelSheet = game.getAssetManager().get(LEVEL_TEXTURES, TextureAtlas.class);
+	// Initializes the images
+	private void initializeImages() {
+		// Retrieves the assets
+		background = BoneyGame.getAssetManager().get(BACKGROUND_TEXTURES,
+				TextureAtlas.class);
+		dog = BoneyGame.getAssetManager().get(DOGS_SPRITE_SHEET,
+				TextureAtlas.class);
+		boneySheet = BoneyGame.getAssetManager().get(BONEY_SPRITE_SHEET,
+				TextureAtlas.class);
+		levelSheet = BoneyGame.getAssetManager().get(LEVEL_TEXTURES,
+				TextureAtlas.class);
 
+		// Creates background sprites
 		back = background.createSprite("background-main");
 
+		// Creates dog sprites
 		for (int i = 0; i < SmallDog.pics.length; i++)
 			SmallDog.pics[i] = dog.createSprite("Dog-s", i);
-
 		for (int i = 0; i < MediumDog.pics.length; i++)
 			MediumDog.pics[i] = dog.createSprite("Dog-m", i);
-
 		for (int i = 0; i < BigDog.pics.length; i++) {
 			BigDog.pics[i] = dog.createSprite("Dog-b", i);
 			BigDog.otherPics[i] = dog.createSprite("Dog-bb", i);
 		}
 
+		// Creates powerup sprites
 		Powerup.coins[0] = levelSheet.createSprite("bCoin");
 		Powerup.coins[1] = levelSheet.createSprite("sCoin");
 		Powerup.coins[2] = levelSheet.createSprite("gCoin");
 		Powerup.powers[0] = levelSheet.createSprite("p1");
+
+		// Creates Boney sprites
 		for (int i = 0; i < 8; i++) {
 			Boney.curIdle[i] = boneySheet.createSprite("Boney-Idle", i);
 			Boney.curCrouch[i] = boneySheet.createSprite("Boney-Crouch", i);
@@ -513,6 +623,8 @@ public class LevelScreen implements Screen {
 			Boney.curRunLeft[i].flip(true, false);
 			Boney.curJump[i] = boneySheet.createSprite("Boney-Jump", i);
 		}
+
+		// Creates and sets button sprites
 		jumpUp = levelSheet.createSprite("Jump");
 		jumpDown = levelSheet.createSprite("JumpP");
 		crouchUp = levelSheet.createSprite("Crouch");
@@ -523,6 +635,7 @@ public class LevelScreen implements Screen {
 		crouchDown.setPosition(crouchX, crouchY);
 	}
 
+	// Collects Data for next screen
 	public double[] collectData() {
 		// 0 = score
 		// 1 = cash
@@ -537,6 +650,7 @@ public class LevelScreen implements Screen {
 		return data;
 	}
 
+	// A buffer for buttons and clicks to progress screens
 	public boolean getKeyUp(int key) {
 		if (Gdx.input.isKeyPressed(key)) {
 			if (enterP == 2) {
@@ -550,4 +664,18 @@ public class LevelScreen implements Screen {
 		}
 		return false;
 	}
+
+	// Returns a dog to be added to the wave
+	private GenericDog whichDog() {
+		switch (waves.get(waveIndex)) {
+		case (0):
+			return smallDogPool.obtain();
+		case (1):
+			return medDogPool.obtain();
+		case (2):
+			return bigDogPool.obtain();
+		}
+		return null;
+	}
 }
+//Hunter Heidenreich 2014

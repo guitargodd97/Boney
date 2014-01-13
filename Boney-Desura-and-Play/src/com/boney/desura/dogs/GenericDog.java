@@ -10,29 +10,39 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool.Poolable;
 import com.boney.desura.moveable.Dog;
 
+//---------------------------------------------------------------------------------------------
+//
+//SmallDog.java
+//Last Revised: 1/12/2014
+//Author: Hunter Heidenreich
+//Product of: Day Ja Voo Games
+//
+//---------------------------------------------------------------------------------------------
+//Summary of Class:
+//
+//This is the the abstract, generic instance of the dog interface
+//
+//---------------------------------------------------------------------------------------------
+
 public abstract class GenericDog implements Dog, Poolable {
-	// Variables
-
-	// Numbers
-	protected double side;
-	protected int state, timer, pntWorth, sub;
-	protected float xVelocity, yVelocity;
 	protected final float floor, gravity;
-
-	// Strings and Booleans
 	protected boolean warnOn, flipped;
-
-	// Objects
+	protected double side;
+	protected float xVelocity, yVelocity;
+	protected int state, timer, pntWorth, sub;
 	protected Rectangle rect;
-	protected Vector2 shape, location;
 	protected ShapeRenderer render;
 	protected Sprite pictura;
+	protected Vector2 shape, location;
 
+	// Initializes the GenericDogS
 	public GenericDog(int width, int height, Sprite pictura, int g) {
 		state = 0;
 		timer = 0;
 		gravity = 9.81f * 35;
 		floor = 125;
+
+		// Determines the type of dog
 		if (g == 0) {
 			sub = 30;
 			shape = new Vector2(width - sub, height - sub);
@@ -43,12 +53,14 @@ public abstract class GenericDog implements Dog, Poolable {
 			sub = 60;
 			shape = new Vector2(width - sub, height - sub);
 		}
+
 		render = new ShapeRenderer();
 		warnOn = false;
 		flipped = false;
 		this.pictura = pictura;
 	}
 
+	// Awakens the dog
 	public void init() {
 		state = 1;
 		// This Math.random() determines which side the dog generates on
@@ -67,6 +79,7 @@ public abstract class GenericDog implements Dog, Poolable {
 		render = new ShapeRenderer();
 	}
 
+	// Moves the dog
 	public void move() {
 		// If the dog is alive
 		if (state == 1) {
@@ -79,11 +92,7 @@ public abstract class GenericDog implements Dog, Poolable {
 		}
 	}
 
-	// draw()
-	//
-	// Handles the illustrating of the dog
-	//
-	// Called by the levels render method
+	// Draws the dog
 	public void draw(SpriteBatch batch) {
 		drawWarning();
 		if (!pictura.isFlipX() && xVelocity > 0)
@@ -93,11 +102,7 @@ public abstract class GenericDog implements Dog, Poolable {
 		batch.draw(pictura, location.x, location.y);
 	}
 
-	// drawWarning()
-	//
 	// Handles whether a warning should be drawn
-	//
-	// Called by the draw method
 	public void drawWarning() {
 		render.begin(ShapeType.Filled);
 		if (timer % 30 == 0 && warnOn)
@@ -114,30 +119,18 @@ public abstract class GenericDog implements Dog, Poolable {
 		render.end();
 	}
 
-	// getRect()
-	//
-	// Returns the rectangle to other classes
-	//
-	// Called to check collision in level screens
+	// Returns the rectangle for collision
 	public Rectangle getRect() {
 		return rect;
 	}
 
-	// reset()
-	//
 	// Turns the dog off
-	//
-	// Called by level class to turn off the dog
 	public void reset() {
 		state = 2;
 		render.dispose();
 	}
 
-	// getDone()
-	//
-	// Returns whether the dog has traveled across the screen
-	//
-	// Called by the level class
+	// Gets whether the dog has traveled across the screen
 	public boolean getDone() {
 		if (side >= 0.5) {
 			if (location.x > Gdx.graphics.getWidth() + 10)
@@ -149,3 +142,4 @@ public abstract class GenericDog implements Dog, Poolable {
 		return false;
 	}
 }
+// Hunter Heidenreich 2014

@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 //---------------------------------------------------------------------------------------------
 //
 //Outfit.java
-//Last Revised: 9/12/2013
+//Last Revised: 1/12/2014
 //Author: Hunter Heidenreich
 //Product of: Day Ja Voo Games
 //
@@ -19,34 +19,18 @@ import com.badlogic.gdx.math.Vector2;
 //---------------------------------------------------------------------------------------------
 
 public class Outfit {
+	private boolean crouch;
+	private Vector2 location;
 
-	// Variables
-
-	// Strings and Booleans
-	boolean crouch;
-
-	// Objects
-	Vector2 location;
-
-	// Outfit()
-	//
-	// Constructor that intializes things
-	//
-	// Called from Boney Constructor
+	// Initializes the Outfit
 	public Outfit(Vector2 location) {
-
 		this.location = location;
-
 		crouch = false;
 	}
 
-	// draw()
-	//
-	// Draws the sprite of Boney
-	//
-	// Called from the Boney draw() method
+	// Draws Boney with the specified frame
 	public void draw(SpriteBatch batch, Sprite bone) {
-
+		// Update location
 		bone.setPosition(location.x, location.y);
 
 		// Whether or not Boney is crouching
@@ -54,26 +38,19 @@ public class Outfit {
 			bone.setScale(1, 1);
 		else
 			bone.setScale(1, 0.5f);
+
+		// Draw
 		bone.draw(batch);
 	}
 
-	// setLocation()
-	//
-	// Sets the location that the Boney sprite should be drawn
-	//
-	// Called from the Boney move() method
+	// Sets the location
 	public void setLocation(Vector2 location) {
 		this.location = location;
 	}
 
-	// crouch()
-	//
-	// Method that takes whether Boney should be drawn crouched or not
-	//
-	// Called in the Boney control() method when the buttons/controls are being
-	// initiated
+	// Crouches the image
 	public void crouch(boolean crouch) {
 		this.crouch = crouch;
 	}
-
 }
+// Hunter Heidenreich 2014

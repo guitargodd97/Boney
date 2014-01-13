@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Rectangle;
 //---------------------------------------------------------------------------------------------
 //
 //Dog.java
-//Last Revised: 9/12/2013
+//Last Revised: 1/12/2014
 //Author: Hunter Heidenreich
 //Product of: Day Ja Voo Games
 //
@@ -19,52 +19,31 @@ import com.badlogic.gdx.math.Rectangle;
 
 public interface Dog {
 
-	// init()
-	//
-	// Initializes variables through the Pool class
-	//
-	// Called from the LevelScreen through the Pool object
+	// The init for the pool class
 	public void init();
 
-	// move()
-	//
 	// Moves the dog
-	//
-	// Called from the LevelScreen
 	public void move();
 
-	// draw()
-	//
-	// Draws the dog based on the texture it receives
-	//
-	// Called from the LevelScreen
+	// Draws the dog
 	public void draw(SpriteBatch batch);
 
+	// Draws the warning sign
 	void drawWarning();
 
-	// getRect()
-	//
-	// Returns the rectangle of the dog to compare for collision
-	//
-	// Called from the LevelScreen for collision
+	// Returns the rectangle for collision
 	public Rectangle getRect();
 
-	// reset()
-	//
-	// Turns off the dog when it is not needed
-	//
-	// Called from LevelScreen through the Pool object
+	// Resets the dog
 	public void reset();
 
-	// getDone()
-	//
-	// Returns whether the dog has crossed the screen
-	//
-	// Called from the LevelScreen
+	// Returns whether the dog is done
 	public boolean getDone();
 
+	// Unleashes the dogs specialty
 	public void specialty();
-	
+
+	// Gets the point worth of the dog
 	public int getWorth();
 }
-// Hunter Heidenreich 2013
+// Hunter Heidenreich 2014

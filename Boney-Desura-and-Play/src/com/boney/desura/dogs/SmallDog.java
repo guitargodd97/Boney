@@ -2,6 +2,19 @@ package com.boney.desura.dogs;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+//---------------------------------------------------------------------------------------------
+//
+//SmallDog.java
+//Last Revised: 1/12/2014
+//Author: Hunter Heidenreich
+//Product of: Day Ja Voo Games
+//
+//---------------------------------------------------------------------------------------------
+//Summary of Class:
+//
+//This is the the small instance of the dog interface
+//
+//---------------------------------------------------------------------------------------------
 
 public class SmallDog extends GenericDog {
 	public static Sprite[] pics = new Sprite[10];
@@ -9,16 +22,22 @@ public class SmallDog extends GenericDog {
 	private int currentFrame;
 	private int jumped;
 
+	// Initializes the SmallDog
 	public SmallDog() {
 		super(64, 64, pics[0], 0);
 		pntWorth = 25;
 		jumped = 0;
 	}
 
+	// Moves the dog
 	public void move() {
 		super.move();
+
+		// Calls the specialty
 		if (timer > 180)
 			specialty();
+
+		// Animates the dog
 		animationBuffer++;
 		if (animationBuffer > 7) {
 			animationBuffer = 0;
@@ -29,7 +48,7 @@ public class SmallDog extends GenericDog {
 		pictura = pics[currentFrame];
 	}
 
-	@Override
+	// The special movement
 	public void specialty() {
 		if (location.x > 25 && location.x + shape.x < 750) {
 			if (jumped == 0) {
@@ -51,9 +70,9 @@ public class SmallDog extends GenericDog {
 		}
 	}
 
-	@Override
+	// Gets the point worth
 	public int getWorth() {
 		return pntWorth;
 	}
-
 }
+// Hunter Heidenreich 2014

@@ -17,27 +17,47 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.boney.desura.BoneyGame;
+//---------------------------------------------------------------------------------------------
+//
+//SelectionScreen.java
+//Last Revised: 1/12/2014
+//Author: Hunter Heidenreich
+//Product of: Day Ja Voo Games
+//
+//---------------------------------------------------------------------------------------------
+//Summary of Class:
+//
+//This is a class that runs the Selection Screen
+//
+//---------------------------------------------------------------------------------------------
 
 public class SelectionScreen implements Screen {
-	BoneyGame game;
-	ShapeRenderer render;
-	Vector2[] stageLocations = new Vector2[3];
-	Vector2 levelLocation, stageSize, levelSize, miniLocation;
-	Sprite background, mini, plaque;
-	Sprite[] levelBox = new Sprite[3];
-	SpriteBatch batch;
-	TextureAtlas atlas, selection;
-	BitmapFont numbers;
-	Stage stage;
-	Label label[] = new Label[3];
-	Rectangle stages[] = new Rectangle[3];
-	int level;
 	public static final String BACKGROUND_TEXTURES = "data/images/background.atlas";
 	public static final String SELECTION_TEXTURES = "data/images/selection.atlas";
+	private BitmapFont numbers;
+	private BoneyGame game;
+	private int level;
+	private Label label[] = new Label[3];
+	private Rectangle stages[] = new Rectangle[3];
+	private ShapeRenderer render;
+	private Sprite background;
+	private Sprite mini;
+	private Sprite plaque;
+	private Sprite[] levelBox = new Sprite[3];
+	private SpriteBatch batch;
+	private Stage stage;
+	private TextureAtlas atlas;
+	private TextureAtlas selection;
+	private Vector2 levelLocation;
+	private Vector2 stageSize;
+	private Vector2 levelSize;
+	private Vector2[] stageLocations = new Vector2[3];
 
+	// Initializes the SelectionScreen
 	public SelectionScreen(BoneyGame game) {
 		this.game = game;
-		render = new ShapeRenderer();
+
+		// Sets up the vectors for placing sprites for levels
 		levelSize = new Vector2(240, 144);
 		levelLocation = new Vector2((Gdx.graphics.getWidth() - 500) / 2,
 				(Gdx.graphics.getHeight() - 300) / 2 + 45);
@@ -50,60 +70,64 @@ public class SelectionScreen implements Screen {
 		for (int i = 0; i < stages.length; i++)
 			stages[i] = new Rectangle(stageLocations[i].x, stageLocations[i].y,
 					stageSize.x, stageSize.y);
+
+		// Loads the data
 		loadData();
 	}
 
-	@Override
+	// Updates the screen
 	public void render(float delta) {
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-		batch.begin();
-		background.draw(batch);
-		plaque.draw(batch);
-		batch.end();
-		render.begin(ShapeType.Line);
-		render.rect(levelLocation.x + 130, levelLocation.y + 55, levelSize.x,
-				levelSize.y);
-		render.end();
+		if (BoneyGame.getAssetManager().update()) {
+			// Clears the screen
+			Gdx.gl.glClearColor(0, 0, 0, 1);
+			Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 
-		render.begin(ShapeType.Filled);
-		render.setColor(Color.BLACK);
-		render.rect(levelLocation.x + 130, levelLocation.y + 55, levelSize.x,
-				levelSize.y);
-		render.end();
+			// Draws the batch
+			batch.begin();
+			background.draw(batch);
+			plaque.draw(batch);
+			batch.end();
 
-		batch.begin();
-		for (Sprite s : levelBox)
-			s.draw(batch);
-		mini.draw(batch);
-		batch.end();
-		stage.act(delta);
-		batch.begin();
-		stage.draw();
-		batch.end();
+			// Draws some line based shapes
+			render.begin(ShapeType.Line);
+			render.rect(levelLocation.x + 130, levelLocation.y + 55,
+					levelSize.x, levelSize.y);
+			render.end();
 
-		checkScreen();
-	}
+			// Draws some full shapes
+			render.begin(ShapeType.Filled);
+			render.setColor(Color.BLACK);
+			render.rect(levelLocation.x + 130, levelLocation.y + 55,
+					levelSize.x, levelSize.y);
+			render.end();
 
-	private void checkScreen() {
-		if (Gdx.input.isTouched()) {
-			for (int i = 0; i < stages.length; i++) {
-				if (stages[i].contains(
-						Gdx.graphics.getWidth() - Gdx.input.getX(),
-						Gdx.graphics.getHeight() - Gdx.input.getY()))
-					if (i <= level % 3)
-						game.setScreen(new LevelScreen(game, (level / 3) + 1,
-								i + 1));
-			}
+			// Draws textures again
+			batch.begin();
+			for (Sprite s : levelBox)
+				s.draw(batch);
+			mini.draw(batch);
+			batch.end();
+
+			// Acts the stage and then draws it
+			stage.act(delta);
+			batch.begin();
+			stage.draw();
+			batch.end();
+
+			// Checks if there is input
+			checkScreen();
 		}
 	}
 
-	@Override
+	// Called on screen resize
 	public void resize(int width, int height) {
+		// Clears and initializes the screen
 		if (stage == null)
 			stage = new Stage(width, height, true);
 		stage.clear();
 		Gdx.input.setInputProcessor(stage);
+
+		// Sets up the labels and adds them to the stages
 		LabelStyle ls = new LabelStyle(numbers, Color.WHITE);
 		if (level % 3 > 1)
 			label[0] = new Label("3", ls);
@@ -120,43 +144,54 @@ public class SelectionScreen implements Screen {
 			label[i].setWidth(width);
 			stage.addActor(label[i]);
 		}
+
+		// Positions the level rectangles
 		for (int i = 0; i < levelBox.length; i++)
 			levelBox[i].setPosition(stages[i].x, stages[i].y);
 	}
 
-	@Override
+	// Called on screen show
 	public void show() {
+		// Initializes the drawing objects
 		batch = new SpriteBatch();
-		atlas = game.getAssetManager().get(BACKGROUND_TEXTURES, TextureAtlas.class);
-		selection = game.getAssetManager().get(SELECTION_TEXTURES, TextureAtlas.class);
+		render = new ShapeRenderer();
+
+		// Retrieves textures
+		atlas = BoneyGame.getAssetManager().get(BACKGROUND_TEXTURES,
+				TextureAtlas.class);
+		selection = BoneyGame.getAssetManager().get(SELECTION_TEXTURES,
+				TextureAtlas.class);
+
+		// Sets up sprites
 		mini = atlas.createSprite("background-main");
 		mini.setScale(0.3f);
 		mini.setPosition(0, 25);
-
 		background = atlas.createSprite("background-main");
 		background.setPosition(0, 0);
 		for (int i = 0; i < levelBox.length; i++)
 			levelBox[i] = selection.createSprite("numberBox");
 		plaque = selection.createSprite("graveyardCopy");
 		plaque.setPosition(levelLocation.x, levelLocation.y);
+
+		// Set up font
 		numbers = new BitmapFont(Gdx.files.internal("data/chilly.fnt"), false);
 	}
 
-	@Override
+	// Called on hide
 	public void hide() {
 		dispose();
 	}
 
-	@Override
+	// Called on pause
 	public void pause() {
 
 	}
 
-	@Override
+	// Called on resume
 	public void resume() {
 	}
 
-	@Override
+	// Disposes of disposable assets
 	public void dispose() {
 		render.dispose();
 		batch.dispose();
@@ -164,9 +199,10 @@ public class SelectionScreen implements Screen {
 		numbers.dispose();
 	}
 
+	// Loads the data from the files
 	public void loadData() {
 		FileHandle statLocation = Gdx.files.local("data/stats.bin");
-		// if location exits
+		// If file exists
 		if (statLocation.exists()) {
 			// Opens it and then modifies it
 			byte[] b = statLocation.readBytes();
@@ -179,4 +215,19 @@ public class SelectionScreen implements Screen {
 			level = b[0];
 		}
 	}
+
+	// Checks the screen for input
+	private void checkScreen() {
+		if (Gdx.input.isTouched()) {
+			for (int i = 0; i < stages.length; i++) {
+				if (stages[i].contains(
+						Gdx.graphics.getWidth() - Gdx.input.getX(),
+						Gdx.graphics.getHeight() - Gdx.input.getY()))
+					if (i <= level % 3)
+						game.setScreen(new LevelScreen(game, (level / 3) + 1,
+								i + 1));
+			}
+		}
+	}
 }
+// Hunter Heidenreich 2014

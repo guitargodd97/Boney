@@ -19,7 +19,7 @@ import com.boney.desura.screens.SplashScreen;
 //---------------------------------------------------------------------------------------------
 //
 //BoneyGame.java
-//Last Revised: 9/9/2013
+//Last Revised: 1/12/2014
 //Author: Hunter Heidenreich
 //Product of: Day Ja Voo Games
 //
@@ -32,115 +32,96 @@ import com.boney.desura.screens.SplashScreen;
 //---------------------------------------------------------------------------------------------
 
 public class BoneyGame extends Game {
-	// / Variables
-
-	// Strings and Booleans
-	public static final String VERSION = "Ver. 1.1 Beta";
-	private static final String LOG = "Boney";
 	public static final boolean FREE = true;
-	ApplicationType app;
+	public static final String VERSION = "Ver. 1.1 Beta";
+	private static ApplicationType app;
 	private static AssetManager assetManager;
+	private static final String LOG = "Boney";
 
-	// create()
-	//
-	// Method initiates the creation of game by starting the splash screen
-	//
-	// Called naturally at the start of game
+	// Creates the game
 	public void create() {
+		// Log the type of game for controls
 		app = Gdx.app.getType();
+
+		// Setup the AssetManager and load the resources
 		setAssetManager(new AssetManager());
 		loadResources();
-		setScreen(new SplashScreen(this));
 
+		// Switch to a screen so the game can start
+		setScreen(new SplashScreen(this));
 	}
 
+	// Load the resources for the game
 	private void loadResources() {
-		getAssetManager().setLoader(TiledMap.class, new TmxMapLoader(
-				new InternalFileHandleResolver()));
+		// Set the type of manager
+		getAssetManager().setLoader(TiledMap.class,
+				new TmxMapLoader(new InternalFileHandleResolver()));
 
-		// player textures
-		getAssetManager().load(SplashScreen.SPLASH_TEXTURES, TextureAtlas.class);
-		getAssetManager().load(CreditsScreen.BACKGROUND_TEXTURES, TextureAtlas.class);
-		getAssetManager().load(GameoverScreen.BUTTON_TEXTURES, TextureAtlas.class);
-		getAssetManager().load(LevelScreen.BONEY_SPRITE_SHEET, TextureAtlas.class);
-		getAssetManager().load(LevelScreen.DOGS_SPRITE_SHEET, TextureAtlas.class);
+		// Queue the various textures
+		getAssetManager()
+				.load(SplashScreen.SPLASH_TEXTURES, TextureAtlas.class);
+		getAssetManager().load(CreditsScreen.BACKGROUND_TEXTURES,
+				TextureAtlas.class);
+		getAssetManager().load(GameoverScreen.BUTTON_TEXTURES,
+				TextureAtlas.class);
+		getAssetManager().load(LevelScreen.BONEY_SPRITE_SHEET,
+				TextureAtlas.class);
+		getAssetManager().load(LevelScreen.DOGS_SPRITE_SHEET,
+				TextureAtlas.class);
 		getAssetManager().load(LevelScreen.LEVEL_TEXTURES, TextureAtlas.class);
 		getAssetManager().load(ModeScreen.MODE_TEXTURES, TextureAtlas.class);
-		getAssetManager().load(SelectionScreen.SELECTION_TEXTURES, TextureAtlas.class);
+		getAssetManager().load(SelectionScreen.SELECTION_TEXTURES,
+				TextureAtlas.class);
 		getAssetManager().load(ShopScreen.SHOP_TEXTURES, TextureAtlas.class);
 
-		// do the actual loading
+		// Actually load the resources
 		getAssetManager().finishLoading();
 	}
 
-	// dispose()
-	//
-	// Method disposes of the game cleanly
-	//
-	// Called naturally at the end of the game
+	// Disposes of the game
 	public void dispose() {
 		super.dispose();
 		getAssetManager().dispose();
 	}
 
-	// render()
-	//
-	// Method renders the game
-	//
-	// Called naturally and continuously
+	// Updates the game
 	public void render() {
 		super.render();
 	}
 
-	// resize()
-	//
-	// Method accounts for changes to the game when it resized
-	//
-	// Called when the window is resized (Desktop build only)
+	// Accounts for resizing of the window
 	public void resize(int width, int height) {
 		super.resize(width, height);
 	}
 
-	// pause()
-	//
-	// Method pauses things that need to be paused (i.e. music)
-	//
-	// Called when needed under certain circumstances like the screen sleeping
-	// (Mobile builds)
+	// Pauses rendering
 	public void pause() {
 		super.pause();
 	}
 
-	// resume()
-	//
-	// Method resumes things that need to be resumed (i.e. music)
-	//
-	// Called when needed under certain circumstances like the screen
-	// re-awakening (Mobile builds)
+	// Resumes rendering
 	public void resume() {
 		super.resume();
 	}
 
+	// Returns the log for debugging
 	public static String getLog() {
 		return LOG;
 	}
 
+	// Returns the ApplicationType for determining the platform
 	public ApplicationType getApp() {
 		return app;
 	}
 
-	/**
-	 * @return the assetManager
-	 */
+	// Returns the AssetManager for accessing resources
 	public static AssetManager getAssetManager() {
 		return assetManager;
 	}
 
-	/**
-	 * @param assetManager the assetManager to set
-	 */
+	// Sets the AssetManager
 	public static void setAssetManager(AssetManager assetManager) {
 		BoneyGame.assetManager = assetManager;
 	}
 }
-// Hunter Heidenreich 2013
+// Hunter Heidenreich 2014

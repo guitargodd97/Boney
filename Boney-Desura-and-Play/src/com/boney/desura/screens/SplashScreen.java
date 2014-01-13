@@ -12,7 +12,7 @@ import com.boney.desura.BoneyGame;
 //---------------------------------------------------------------------------------------------
 //
 //SplashScreen.java
-//Last Revised: 11/20/2013
+//Last Revised: 1/12/2014
 //Author: Hunter Heidenreich
 //Product of: Day Ja Voo Games
 //
@@ -24,38 +24,122 @@ import com.boney.desura.BoneyGame;
 //---------------------------------------------------------------------------------------------
 
 public class SplashScreen implements Screen {
-	// Variables
-	// Numbers
-	protected float alpha = 0, alphaStatic = 0, fade = 0.01f, timer = 0;
-	protected int counter = 0;
-
-	// Booleans and Strings
-	protected boolean reverse, hasPlayed, assigned;
-	public static final String staticSound = "data/sound/sfx/static.mp3",
-			splashSound = "data/sound/music/splashsound.mp3";
 	public static final String SPLASH_TEXTURES = "data/images/splash.atlas";
+	public static final String STATIC_SOUND = "data/sound/sfx/static.mp3";
+	public static final String SPLASH_SOUND = "data/sound/music/splashsound.mp3";
+	private boolean reverse;
+	private boolean hasPlayed;
+	private BoneyGame game;
+	private float alpha;
+	private float fade;
+	private float timer;
+	private int counter;
+	private Music splashS;
+	private Sprite stat, splash;
+	private SpriteBatch batch;
+	private TextureAtlas splashAtlas;
 
-	// Images and the Like
-	protected TextureAtlas splashAtlas;
-	protected Sprite stat, splash;
-	protected SpriteBatch batch;
-
-	// Sound
-	protected Music splashS;
-
-	// Other Objects
-	protected BoneyGame game;
-
-	// Constructor
+	// Constructor for SplashScreen
 	public SplashScreen(BoneyGame game) {
 		this.game = game;
-		splashAtlas = game.getAssetManager().get(SPLASH_TEXTURES, TextureAtlas.class);
+
+		// Initialize alpha shifting variables
 		reverse = false;
 		hasPlayed = false;
+		alpha = 0;
+		fade = 0.01f;
+		timer = 0;
+		counter = 0;
+	}
+
+	// Updates the screen
+	public void render(float delta) {
+		if (BoneyGame.getAssetManager().update()) {
+			// Clears the screen
+			Gdx.gl.glClearColor(0, 0, 0, alpha);
+			Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+
+			// Starts drawing the textures with new alphas
+			batch.begin();
+			Color c = batch.getColor();
+			batch.setColor(c.r, c.b, c.g, 1);
+			if (timer <= 2.85 || timer >= 3.15)
+				splash.draw(batch);
+			c = batch.getColor();
+			batch.setColor(c.r, c.b, c.g, 1);
+			if (timer >= 2.85 && timer <= 3.15) {
+				stat.draw(batch);
+				playStaticSound();
+			}
+			batch.end();
+
+			// Updates the alphas
+			updateAlpha();
+		}
+	}
+
+	// Called when the screen changes size
+	public void resize(int width, int height) {
+	}
+
+	// Called on screen startup
+	public void show() {
+		// Initializes the batch
+		batch = new SpriteBatch();
+
+		// Retrieves the textures
+		splashAtlas = BoneyGame.getAssetManager().get(SPLASH_TEXTURES,
+				TextureAtlas.class);
+
+		// Sets up the sprites
+		stat = splashAtlas.createSprite("statics");
+		splash = splashAtlas.createSprite("splash");
+		splash.setPosition((Gdx.graphics.getWidth() - splash.getWidth()) / 2,
+				(Gdx.graphics.getHeight() - splash.getHeight()) / 2);
+
+		// Initializes the sounds
+		splashS = Gdx.audio.newMusic(Gdx.files.internal(SPLASH_SOUND));
+		splashS.play();
+		splashS.setLooping(false);
+	}
+
+	// Called on hide
+	public void hide() {
+		dispose();
+	}
+
+	// Called on pause
+	public void pause() {
+	}
+
+	// Called on resume
+	public void resume() {
 
 	}
 
-	public void render(float delta) {
+	// Disposes of disposable assets
+	@Override
+	public void dispose() {
+		batch.dispose();
+		splashS.dispose();
+	}
+
+	// Switches to main menu
+	private void completedSplash() {
+		game.setScreen(new MenuScreen(game));
+	}
+
+	// Plays the static noise
+	public void playStaticSound() {
+		// If the static hasn't been played yet
+		if (!hasPlayed) {
+			Gdx.audio.newSound(Gdx.files.internal(STATIC_SOUND)).play();
+			hasPlayed = true;
+		}
+	}
+
+	// Updates the alpha of the images to create a fade-in fade-out
+	private void updateAlpha() {
 		splash.setColor(1, 1, 1, alpha);
 		stat.setColor(1, 1, 1, alpha / 4);
 		if (counter % 3 == 0) {
@@ -72,66 +156,6 @@ public class SplashScreen implements Screen {
 		if (reverse && alpha < 0.02f)
 			completedSplash();
 		stat.setPosition((float) Math.random() * -1, (float) Math.random() * -1);
-		Gdx.gl.glClearColor(0, 0, 0, alpha);
-		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-		batch.begin();
-		Color c = batch.getColor();
-		batch.setColor(c.r, c.b, c.g, 1);
-		if (timer <= 2.85 || timer >= 3.15)
-			splash.draw(batch);
-		c = batch.getColor();
-		batch.setColor(c.r, c.b, c.g, 1);
-		if (timer >= 2.85 && timer <= 3.15) {
-			stat.draw(batch);
-			playStaticSound();
-		}
-		batch.end();
-	}
-
-	// Called when the screen changes size
-	public void resize(int width, int height) {
-	}
-
-	// Called on screen startup
-	public void show() {
-		batch = new SpriteBatch();
-		stat = splashAtlas.createSprite("statics");
-		splash = splashAtlas.createSprite("splash");
-		splash.setPosition((Gdx.graphics.getWidth() - splash.getWidth()) / 2,
-				(Gdx.graphics.getHeight() - splash.getHeight()) / 2);
-		splashS = Gdx.audio.newMusic(Gdx.files.internal(splashSound));
-		splashS.play();
-		splashS.setLooping(false);
-		assigned = true;
-	}
-
-	public void hide() {
-		dispose();
-	}
-
-	@Override
-	public void pause() {
-	}
-
-	@Override
-	public void resume() {
-
-	}
-
-	@Override
-	public void dispose() {
-		batch.dispose();
-		splashS.dispose();
-	}
-
-	public void completedSplash() {
-		game.setScreen(new MenuScreen(game));
-	}
-
-	public void playStaticSound() {
-		if (!hasPlayed) {
-			Gdx.audio.newSound(Gdx.files.internal(staticSound)).play();
-			hasPlayed = true;
-		}
 	}
 }
+// Hunter Heidenreich 2014

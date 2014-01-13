@@ -9,117 +9,121 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.boney.desura.BoneyGame;
 import com.boney.desura.other.Boxes;
+//---------------------------------------------------------------------------------------------
+//
+//ModeScreen.java
+//Last Revised: 1/12/2014
+//Author: Hunter Heidenreich
+//Product of: Day Ja Voo Games
+//
+//---------------------------------------------------------------------------------------------
+//Summary of Class:
+//
+//This is a class that runs the Mode Screen
+//
+//---------------------------------------------------------------------------------------------
 
 public class ModeScreen implements Screen {
-	BoneyGame game;
-	Stage stage;
-	Label[] label = new Label[4];
-	Label version;
-	Boxes vT;
-	Rectangle rect[] = new Rectangle[4];
-	SpriteBatch batch;
-	private BitmapFont fontW;
 	public static final String MODE_TEXTURES = "data/images/mode.atlas";
-	TextureAtlas atlas;
-	Sprite classic, survive, upgrade, custom;
-	int NA;
-	boolean vN;
+	private BitmapFont fontW;
+	private boolean vN;
+	private BoneyGame game;
+	private Boxes vT;
+	private Label version;
+	private Rectangle rect[] = new Rectangle[4];
+	private Sprite classic;
+	private Sprite survive;
+	private Sprite upgrade;
+	private Sprite custom;
+	private SpriteBatch batch;
+	private TextureAtlas atlas;
 
+	// Initializes the ModeScreen
 	public ModeScreen(BoneyGame game) {
 		this.game = game;
+
+		// Sets up the clickable rectangles
 		for (int i = 0; i < rect.length; i++) {
 			rect[i] = new Rectangle();
 			rect[i].setSize(Gdx.graphics.getWidth() / 2 - 20,
 					Gdx.graphics.getHeight() / 2 - 20);
 		}
-		Gdx.app.log("Boney", "" + rect[1].width + " " + rect[1].height);
 		rect[0].setPosition(0, Gdx.graphics.getHeight() / 2 + 10);
 		rect[1].setPosition(Gdx.graphics.getWidth() / 2 + 10,
 				Gdx.graphics.getHeight() / 2 + 10);
 		rect[2].setPosition(0, 0);
 		rect[3].setPosition(Gdx.graphics.getWidth() / 2 + 10, 0);
+
+		// Creates a "NOT AVAILABLE" box
 		vT = new Boxes(3);
-		NA = 0;
 		vN = false;
 	}
 
-	@Override
+	// Updates the screen
 	public void render(float delta) {
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-		batch.begin();
-		stage.draw();
-		batch.end();
-		batch.begin();
-		upgrade.draw(batch);
-		custom.draw(batch);
-		survive.draw(batch);
-		classic.draw(batch);
-		if (vN)
-			version.draw(batch, 1);
-		batch.end();
-		if (Gdx.input.justTouched()) {
-			if (rect[0].contains(Gdx.input.getX(), Gdx.input.getY()))
-				game.setScreen(new ShopScreen(game));
-			else if (rect[1].contains(Gdx.input.getX(), Gdx.input.getY())) {
-				if (BoneyGame.FREE) {
-					NA = 0;
-					if (vN)
-						vN = false;
-					else
-						vN = true;
-				}
-			} else if (rect[2].contains(Gdx.input.getX(), Gdx.input.getY()))
-				game.setScreen(new SelectionScreen(game));
-			else if (rect[3].contains(Gdx.input.getX(), Gdx.input.getY()))
-				game.setScreen(new LevelScreen(game, 1, 10));
-		}
+		if (BoneyGame.getAssetManager().update()) {
+			// Clears the screen
+			Gdx.gl.glClearColor(0, 0, 0, 1);
+			Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 
+			// Draws the sprite batch
+			batch.begin();
+			upgrade.draw(batch);
+			custom.draw(batch);
+			survive.draw(batch);
+			classic.draw(batch);
+			// Whether we are displaying NA
+			if (vN)
+				version.draw(batch, 1);
+			batch.end();
+
+			// Determine whether to display or hide NA
+			if (Gdx.input.justTouched()) {
+				if (rect[0].contains(Gdx.input.getX(), Gdx.input.getY()))
+					game.setScreen(new ShopScreen(game));
+				else if (rect[1].contains(Gdx.input.getX(), Gdx.input.getY())) {
+					if (BoneyGame.FREE) {
+						if (vN)
+							vN = false;
+						else
+							vN = true;
+					}
+				} else if (rect[2].contains(Gdx.input.getX(), Gdx.input.getY()))
+					game.setScreen(new SelectionScreen(game));
+				else if (rect[3].contains(Gdx.input.getX(), Gdx.input.getY()))
+					game.setScreen(new LevelScreen(game, 1, 10));
+			}
+		}
 	}
 
-	@Override
+	// Called on resize window
 	public void resize(int width, int height) {
-		if (stage == null)
-			stage = new Stage(width, height, true);
-		stage.clear();
-		Gdx.input.setInputProcessor(stage);
+		// Sets up the NA label
 		LabelStyle ls = new LabelStyle(fontW, Color.WHITE);
-		label[0] = new Label("Upgrade Boney", ls);
-		label[0].setX(Gdx.graphics.getWidth() / 4 - Gdx.graphics.getWidth()
-				/ 10);
-		label[0].setY(20);
-		label[1] = new Label("Customize Boney", ls);
-		label[1].setX(Gdx.graphics.getWidth() / 2 + Gdx.graphics.getWidth() / 6);
-		label[1].setY(20);
-		label[2] = new Label("Classic Mode", ls);
-		label[2].setX(Gdx.graphics.getWidth() / 4 - Gdx.graphics.getWidth()
-				/ 10);
-		label[2].setY(Gdx.graphics.getHeight() / 2 + 30);
-		label[3] = new Label("Survival Mode", ls);
-		label[3].setX(Gdx.graphics.getWidth() / 2 + Gdx.graphics.getWidth() / 6);
-		label[3].setY(Gdx.graphics.getHeight() / 2 + 30);
-		for (Label l : label) {
-			l.setWidth(width);
-			stage.addActor(l);
-		}
 		version = new Label(vT.getMessage(), ls);
 		version.setAlignment(Align.center);
 		version.setWidth(width);
 		version.setY(200);
 	}
 
-	@Override
+	// Called on window show
 	public void show() {
+		// Initializes the batch
 		batch = new SpriteBatch();
-		fontW = new BitmapFont(Gdx.files.internal("data/chilly.fnt"), false);
-		atlas = game.getAssetManager().get(MODE_TEXTURES, TextureAtlas.class);
 
+		// Grabs the fonts
+		fontW = new BitmapFont(Gdx.files.internal("data/chilly.fnt"), false);
+
+		// Grabs the textures
+		atlas = BoneyGame.getAssetManager().get(MODE_TEXTURES,
+				TextureAtlas.class);
+
+		// Sets up the sprites
 		classic = atlas.createSprite("modeClassic");
 		classic.setPosition(rect[0].x, rect[0].y - 10);
 		classic.setSize(Gdx.graphics.getWidth() / 2,
@@ -138,24 +142,23 @@ public class ModeScreen implements Screen {
 				Gdx.graphics.getHeight() / 2);
 	}
 
-	@Override
+	// Called on hide
 	public void hide() {
 		dispose();
 	}
 
-	@Override
+	// Called on pause
 	public void pause() {
 	}
 
-	@Override
+	// Called on resume
 	public void resume() {
 	}
 
-	@Override
+	// Disposes of disposable assets
 	public void dispose() {
 		fontW.dispose();
-		stage.dispose();
 		batch.dispose();
 	}
-
 }
+// Hunter Heidenreich 2014

@@ -11,7 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 //---------------------------------------------------------------------------------------------
 //
 //Boney.java
-//Last Revised: 9/12/2013
+//Last Revised: 1/12/2014
 //Author: Hunter Heidenreich
 //Product of: Day Ja Voo Games
 //
@@ -24,37 +24,47 @@ import com.badlogic.gdx.math.Vector2;
 //---------------------------------------------------------------------------------------------
 
 public class Boney {
-
-	// Variables
-
-	// Numbers
-	int state, jumpHeight, curHealth, powerupcnt, animationBuffer,
-			currentFrame;
-	final float gravity = 9.81f * 35, normalFloor = 125;
-	float energyY, energyX, floor, floorMod, sizeMod;
-	int cash, speed, cashMultiplier, powerupLength, powerupFrequency, health,
-			buffer, scoreMultiplier, size, discount;
-
-	// Strings and Booleans
-	FileHandle statLocation, moneyLocation;
-	boolean crouch, poweruped;
-
-	// Objects
-	Outfit outfit;
-	Vector2 location, velocity, shape, powerupInfo;
-	Rectangle rect;
-	ApplicationType appType;
-	private int running;
+	public static Sprite[] curIdle = new Sprite[8];
+	public static Sprite[] curCrouch = new Sprite[8];
+	public static Sprite[] curRunRight = new Sprite[8];
+	public static Sprite[] curRunLeft = new Sprite[8];
+	public static Sprite[] curJump = new Sprite[10];
+	private final float gravity = 9.81f * 35;
+	private final float normalFloor = 125;
+	private ApplicationType appType;
+	private boolean crouch;
 	private boolean jump;
-	public static Sprite[] curIdle = new Sprite[8], curCrouch = new Sprite[8],
-			curRunRight = new Sprite[8], curRunLeft = new Sprite[8],
-			curJump = new Sprite[10];
+	private boolean poweruped;
+	private FileHandle statLocation;
+	private FileHandle moneyLocation;
+	private float energyY;
+	private float energyX;
+	private float floor;
+	private float sizeMod;
+	private int state;
+	private int curHealth;
+	private int powerupcnt;
+	private int animationBuffer;
+	private int currentFrame;
+	private int cash;
+	private int speed;
+	private int cashMultiplier;
+	private int powerupLength;
+	private int powerupFrequency;
+	private int health;
+	private int buffer;
+	private int scoreMultiplier;
+	private int size;
+	private int discount;
+	private int running;
+	private Outfit outfit;
+	private Rectangle rect;
+	private Vector2 location;
+	private Vector2 velocity;
+	private Vector2 shape;
+	private Vector2 powerupInfo;
 
-	// Boney()
-	//
-	// Constructor for initialization
-	//
-	// Called on object creation
+	// Initializes the Boney
 	public Boney() {
 		// Called to initialize numbers from last save
 		loadStat();
@@ -64,19 +74,23 @@ public class Boney {
 		running = 0;
 		energyY = 0;
 		energyX = 0;
-		jumpHeight = 0;
 		floor = 125;
 		curHealth = health;
 		powerupcnt = 300 * powerupLength;
+
+		// Booleans
 		poweruped = false;
 		crouch = false;
 		jump = false;
+
+		// Locations and Outfits
 		shape = new Vector2(64, 128);
 		velocity = new Vector2(0, 0);
 		location = new Vector2(Gdx.graphics.getWidth() / 2 - shape.x / 2, 100);
 		rect = new Rectangle(location.x, location.y, shape.x, shape.y);
 		outfit = new Outfit(location);
 		powerupInfo = new Vector2(0, 0);
+
 		// Called for controls
 		appType = Gdx.app.getType();
 		sizeMod = 1 - (0.05f * size);
@@ -84,11 +98,7 @@ public class Boney {
 		currentFrame = 0;
 	}
 
-	// move()
-	//
-	// Moves Boney back and forth, functions similarly to an update method
-	//
-	// Called by LevelScreen
+	// Moves Boney
 	public void move(Rectangle jumpRect, Rectangle crouchRect) {
 		// If Boney is alive
 		if (state == 2) {
@@ -145,6 +155,7 @@ public class Boney {
 			if (curHealth == 0)
 				state = 0;
 
+			// Powerups
 			if (poweruped) {
 				powerupcnt -= 1;
 				if (powerupcnt <= 0) {
@@ -160,14 +171,11 @@ public class Boney {
 		}
 	}
 
-	// draw()
-	//
-	// Method that passes the SpriteBatch for drawing to the Outfit object
-	//
-	// Called from LevelScreen
+	// Draw Boney
 	public void draw(SpriteBatch batch) {
 		// If Boney is not invisible
 		if (state > 0) {
+			// Crouch animaton
 			if (crouch) {
 				outfit.draw(batch, curCrouch[currentFrame]);
 				animationBuffer++;
@@ -176,6 +184,7 @@ public class Boney {
 					if (currentFrame < 7)
 						currentFrame++;
 				}
+				// Jump animation
 			} else if (energyY > 10 && jump) {
 				outfit.draw(batch, curJump[currentFrame]);
 				animationBuffer++;
@@ -186,6 +195,7 @@ public class Boney {
 					else
 						jump = false;
 				}
+				// Running right animation
 			} else if (energyX > 7 || running == 2) {
 				outfit.draw(batch, curRunRight[currentFrame]);
 				animationBuffer++;
@@ -195,6 +205,7 @@ public class Boney {
 					if (currentFrame > 7)
 						currentFrame = 0;
 				}
+				// Running left animation
 			} else if (energyX < -7 || running == 1) {
 				outfit.draw(batch, curRunLeft[currentFrame]);
 				animationBuffer++;
@@ -204,6 +215,7 @@ public class Boney {
 					if (currentFrame > 7)
 						currentFrame = 0;
 				}
+				// Idle animation
 			} else {
 				outfit.draw(batch, curIdle[currentFrame]);
 				animationBuffer++;
@@ -217,11 +229,7 @@ public class Boney {
 		}
 	}
 
-	// applyEffect()
-	//
-	// Method for apply power ups to Boney
-	//
-	// Called from the LevelScreen
+	// Apply effect to Boney
 	public void applyEffect(int effect) {
 		// Takes an effect and picks a method to call
 		switch (effect) {
@@ -246,6 +254,7 @@ public class Boney {
 
 	}
 
+	// Turns off effect
 	private void resetPower() {
 		switch ((int) powerupInfo.x) {
 		case (3):
@@ -254,11 +263,7 @@ public class Boney {
 		}
 	}
 
-	// saveStat()
-	//
-	// Method that saves all Boney's modifiable stats
-	//
-	// Called by screen before they exit
+	// Saves Boney's Stats
 	public void saveStat(int i) {
 		resetPower();
 		// Writes a .bin file to hold bytes (research if .bin is necessary)
@@ -272,12 +277,8 @@ public class Boney {
 		moneyLocation.writeString("" + cash, false);
 	}
 
-	// loadStat()
-	//
-	// Loads up the stats for the Boney class
-	//
-	// Called from the constructor
-	public void loadStat() {
+	// Loads Boney's stats
+	private void loadStat() {
 		// File location for stats
 		statLocation = Gdx.files.local("data/stats.bin");
 		// if location exits
@@ -295,8 +296,8 @@ public class Boney {
 			discount = b[9];
 		} else {
 			// If it doesn't exists, make a new one
-			statLocation.writeBytes(new byte[] { 0, 1, 1, 1, 1, 1, 1, 1, 1, 0},
-					false);
+			statLocation.writeBytes(
+					new byte[] { 0, 1, 1, 1, 1, 1, 1, 1, 1, 0 }, false);
 			byte[] b = statLocation.readBytes();
 			speed = b[1];
 			cashMultiplier = b[2];
@@ -324,50 +325,31 @@ public class Boney {
 		}
 	}
 
-	// setState()
-	//
-	// Sets the state for Boney, saying whether he should be drawn or not
-	//
-	// Called in the Screen classes
+	// Sets Boney's state
 	public void setState(int state) {
 		this.state = state;
 	}
 
-	// getRect()
-	//
-	// Returns the rectangle to check for collision
-	//
-	// Called in the screen classes for collision and such
+	// Returns Rectangle for collision
 	public Rectangle getRect() {
 		return rect;
 	}
 
-	// setEnergyX()
-	//
-	// Sets the movement of Boney's X
-	//
-	// Called in the control method
+	// Sets the energyX to move Boney
 	public void setEnergyX(Float energyX) {
 		this.energyX = energyX * speed;
 	}
 
-	// jump()
-	//
-	// Give Boney a positive Y velocity
-	//
-	// Called in control method
+	// Sets the energyY to move Boney up
 	public void jump() {
+		// If Boney is not currently in the air
 		if (location.y == floor) {
 			energyY = 300.0f;
 			jump = true;
 		}
 	}
 
-	// setCrouch()
-	//
-	// Sets whether Boney should be crouching or not
-	//
-	// Called from control method
+	// Sets Boney to the crouch position
 	public void setCrouch(boolean crouch) {
 		if (this.crouch && !crouch)
 			currentFrame = 0;
@@ -376,11 +358,7 @@ public class Boney {
 		this.crouch = crouch;
 	}
 
-	// control()
-	//
-	// Controls Input and responds to it
-	//
-	// Called in the move method
+	// The control method that updates all the other variables
 	public void controls(Rectangle jumpRect, Rectangle crouchRect) {
 		// Checks if the controls should be based on desktop build
 		if (appType == ApplicationType.Desktop) {
@@ -428,42 +406,39 @@ public class Boney {
 		}
 	}
 
-	// loseLive()
-	//
 	// Subtracts 1 from the current health
-	//
-	// Called from the LevelScreen on Collision with something
 	public void loseLive() {
 		curHealth--;
 	}
 
-	// getLife()
-	//
 	// Returns whether Boney should still be alive or he should have gameover
-	//
-	// Called from the LevelScreen, after collision is calculated
 	public boolean getLife() {
 		return curHealth > 0;
 	}
 
+	// Returns the current cash
 	public double getCash() {
 		return (double) cash / 100;
 	}
 
+	// Gets the powerupfrequency
 	public int getPowerupFrequency() {
 		return powerupFrequency;
 	}
 
+	// Gets the dog buffer
 	public int getBuffer() {
 		return buffer;
 	}
 
+	// Gets the score multiplier
 	public int getScoreMultiplier() {
 		return scoreMultiplier;
 	}
-	
+
+	// Gets the number of lives
 	public int returnLives() {
 		return curHealth;
 	}
 }
-// Hunter Heidenreich 2013
+// Hunter Heidenreich 2014
