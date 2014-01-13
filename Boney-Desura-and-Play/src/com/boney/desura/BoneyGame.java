@@ -19,7 +19,7 @@ import com.boney.desura.screens.SplashScreen;
 //---------------------------------------------------------------------------------------------
 //
 //BoneyGame.java
-//Last Revised: 1/12/2014
+//Last Revised: 1/12/2014 
 //Author: Hunter Heidenreich
 //Product of: Day Ja Voo Games
 //
