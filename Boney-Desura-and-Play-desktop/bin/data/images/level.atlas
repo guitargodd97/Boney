@@ -1,0 +1,61 @@
+
+level.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+p1
+  rotate: false
+  xy: 1, 23
+  size: 35, 35
+  orig: 35, 35
+  offset: 0, 0
+  index: -1
+Crouch
+  rotate: false
+  xy: 38, 27
+  size: 32, 31
+  orig: 32, 31
+  offset: 0, 0
+  index: -1
+CrouchP
+  rotate: false
+  xy: 72, 27
+  size: 32, 31
+  orig: 32, 31
+  offset: 0, 0
+  index: -1
+Jump
+  rotate: false
+  xy: 106, 27
+  size: 32, 31
+  orig: 32, 31
+  offset: 0, 0
+  index: -1
+JumpP
+  rotate: false
+  xy: 140, 27
+  size: 32, 31
+  orig: 32, 31
+  offset: 0, 0
+  index: -1
+bCoin
+  rotate: false
+  xy: 1, 1
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+sCoin
+  rotate: false
+  xy: 174, 38
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+gCoin
+  rotate: false
+  xy: 196, 38
+  size: 19, 20
+  orig: 19, 20
+  offset: 0, 0
+  index: -1
