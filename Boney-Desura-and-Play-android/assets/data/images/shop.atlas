@@ -1,0 +1,40 @@
+
+shop.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+storeDur
+  rotate: false
+  xy: 1, 38
+  size: 190, 217
+  orig: 190, 217
+  offset: 0, 0
+  index: -1
+storeNA
+  rotate: false
+  xy: 193, 38
+  size: 190, 217
+  orig: 190, 217
+  offset: 0, 0
+  index: -1
+storeSpeed
+  rotate: false
+  xy: 385, 38
+  size: 190, 217
+  orig: 190, 217
+  offset: 0, 0
+  index: -1
+storeScore
+  rotate: false
+  xy: 577, 40
+  size: 190, 215
+  orig: 190, 215
+  offset: 0, 0
+  index: -1
+back
+  rotate: false
+  xy: 1, 1
+  size: 35, 35
+  orig: 35, 35
+  offset: 0, 0
+  index: -1

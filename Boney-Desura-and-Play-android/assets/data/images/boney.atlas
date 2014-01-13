@@ -1,0 +1,292 @@
+
+boney.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+Boney-Jump
+  rotate: false
+  xy: 1, 359
+  size: 76, 136
+  orig: 76, 136
+  offset: 0, 0
+  index: 1
+Boney-Jump
+  rotate: false
+  xy: 1, 221
+  size: 76, 136
+  orig: 76, 136
+  offset: 0, 0
+  index: 2
+Boney-Jump
+  rotate: false
+  xy: 79, 359
+  size: 76, 136
+  orig: 76, 136
+  offset: 0, 0
+  index: 3
+Boney-Crouch
+  rotate: false
+  xy: 1, 91
+  size: 76, 128
+  orig: 76, 128
+  offset: 0, 0
+  index: 0
+Boney-Crouch
+  rotate: false
+  xy: 79, 229
+  size: 76, 128
+  orig: 76, 128
+  offset: 0, 0
+  index: 1
+Boney-Crouch
+  rotate: false
+  xy: 157, 367
+  size: 76, 128
+  orig: 76, 128
+  offset: 0, 0
+  index: 2
+Boney-Crouch
+  rotate: false
+  xy: 79, 99
+  size: 76, 128
+  orig: 76, 128
+  offset: 0, 0
+  index: 3
+Boney-Crouch
+  rotate: false
+  xy: 157, 237
+  size: 76, 128
+  orig: 76, 128
+  offset: 0, 0
+  index: 4
+Boney-Crouch
+  rotate: false
+  xy: 235, 367
+  size: 76, 128
+  orig: 76, 128
+  offset: 0, 0
+  index: 5
+Boney-Crouch
+  rotate: false
+  xy: 157, 107
+  size: 76, 128
+  orig: 76, 128
+  offset: 0, 0
+  index: 6
+Boney-Run
+  rotate: false
+  xy: 235, 237
+  size: 76, 128
+  orig: 76, 128
+  offset: 0, 0
+  index: 0
+Boney-Run
+  rotate: false
+  xy: 313, 367
+  size: 76, 128
+  orig: 76, 128
+  offset: 0, 0
+  index: 1
+Boney-Run
+  rotate: false
+  xy: 235, 107
+  size: 76, 128
+  orig: 76, 128
+  offset: 0, 0
+  index: 2
+Boney-Run
+  rotate: false
+  xy: 313, 237
+  size: 76, 128
+  orig: 76, 128
+  offset: 0, 0
+  index: 3
+Boney-Run
+  rotate: false
+  xy: 391, 367
+  size: 76, 128
+  orig: 76, 128
+  offset: 0, 0
+  index: 4
+Boney-Run
+  rotate: false
+  xy: 313, 107
+  size: 76, 128
+  orig: 76, 128
+  offset: 0, 0
+  index: 5
+Boney-Run
+  rotate: false
+  xy: 391, 237
+  size: 76, 128
+  orig: 76, 128
+  offset: 0, 0
+  index: 6
+Boney-Run
+  rotate: false
+  xy: 469, 367
+  size: 76, 128
+  orig: 76, 128
+  offset: 0, 0
+  index: 7
+Boney-Run
+  rotate: false
+  xy: 391, 107
+  size: 76, 128
+  orig: 76, 128
+  offset: 0, 0
+  index: 8
+Boney-Run
+  rotate: false
+  xy: 469, 237
+  size: 76, 128
+  orig: 76, 128
+  offset: 0, 0
+  index: 9
+Boney-Hurt
+  rotate: false
+  xy: 547, 367
+  size: 64, 128
+  orig: 64, 128
+  offset: 0, 0
+  index: 0
+Boney-Hurt
+  rotate: false
+  xy: 547, 367
+  size: 64, 128
+  orig: 64, 128
+  offset: 0, 0
+  index: 6
+Boney-Idle
+  rotate: false
+  xy: 547, 367
+  size: 64, 128
+  orig: 64, 128
+  offset: 0, 0
+  index: 0
+Boney-Idle
+  rotate: false
+  xy: 547, 367
+  size: 64, 128
+  orig: 64, 128
+  offset: 0, 0
+  index: 7
+Boney-Jump
+  rotate: false
+  xy: 547, 367
+  size: 64, 128
+  orig: 64, 128
+  offset: 0, 0
+  index: 0
+Boney-Jump
+  rotate: false
+  xy: 547, 367
+  size: 64, 128
+  orig: 64, 128
+  offset: 0, 0
+  index: 7
+Boney-Hurt
+  rotate: false
+  xy: 469, 107
+  size: 64, 128
+  orig: 64, 128
+  offset: 0, 0
+  index: 1
+Boney-Hurt
+  rotate: false
+  xy: 469, 107
+  size: 64, 128
+  orig: 64, 128
+  offset: 0, 0
+  index: 5
+Boney-Hurt
+  rotate: false
+  xy: 547, 237
+  size: 64, 128
+  orig: 64, 128
+  offset: 0, 0
+  index: 2
+Boney-Hurt
+  rotate: false
+  xy: 547, 237
+  size: 64, 128
+  orig: 64, 128
+  offset: 0, 0
+  index: 4
+Boney-Hurt
+  rotate: false
+  xy: 613, 367
+  size: 64, 128
+  orig: 64, 128
+  offset: 0, 0
+  index: 3
+Boney-Idle
+  rotate: false
+  xy: 535, 107
+  size: 64, 128
+  orig: 64, 128
+  offset: 0, 0
+  index: 1
+Boney-Idle
+  rotate: false
+  xy: 535, 107
+  size: 64, 128
+  orig: 64, 128
+  offset: 0, 0
+  index: 6
+Boney-Idle
+  rotate: false
+  xy: 613, 237
+  size: 64, 128
+  orig: 64, 128
+  offset: 0, 0
+  index: 2
+Boney-Idle
+  rotate: false
+  xy: 613, 237
+  size: 64, 128
+  orig: 64, 128
+  offset: 0, 0
+  index: 5
+Boney-Idle
+  rotate: false
+  xy: 679, 367
+  size: 64, 128
+  orig: 64, 128
+  offset: 0, 0
+  index: 3
+Boney-Idle
+  rotate: false
+  xy: 679, 367
+  size: 64, 128
+  orig: 64, 128
+  offset: 0, 0
+  index: 4
+Boney-Jump
+  rotate: false
+  xy: 601, 107
+  size: 64, 128
+  orig: 64, 128
+  offset: 0, 0
+  index: 4
+Boney-Jump
+  rotate: false
+  xy: 601, 107
+  size: 64, 128
+  orig: 64, 128
+  offset: 0, 0
+  index: 6
+Boney-Jump
+  rotate: false
+  xy: 679, 237
+  size: 64, 128
+  orig: 64, 128
+  offset: 0, 0
+  index: 5
+Boney-Crouch
+  rotate: false
+  xy: 1, 1
+  size: 76, 88
+  orig: 76, 88
+  offset: 0, 0
+  index: 7

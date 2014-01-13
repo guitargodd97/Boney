@@ -1,0 +1,33 @@
+
+mode.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+modeClassic
+  rotate: false
+  xy: 1, 243
+  size: 400, 240
+  orig: 400, 240
+  offset: 0, 0
+  index: -1
+modeCustom
+  rotate: false
+  xy: 1, 1
+  size: 400, 240
+  orig: 400, 240
+  offset: 0, 0
+  index: -1
+modeSurvival
+  rotate: false
+  xy: 403, 243
+  size: 400, 240
+  orig: 400, 240
+  offset: 0, 0
+  index: -1
+modeUpgrade
+  rotate: false
+  xy: 403, 1
+  size: 400, 240
+  orig: 400, 240
+  offset: 0, 0
+  index: -1
