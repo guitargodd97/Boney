@@ -364,17 +364,22 @@ public class Boney {
 		if (appType == ApplicationType.Desktop) {
 			if (!crouch || location.y > floor) {
 				// Side to side
-				if (Gdx.input.isKeyPressed(Keys.LEFT)) {
+				if (Gdx.input.isKeyPressed(Keys.LEFT)
+						|| Gdx.input.isKeyPressed(Keys.A)) {
 					setEnergyX(-250.0f);
-				} else if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
+				} else if (Gdx.input.isKeyPressed(Keys.RIGHT)
+						|| Gdx.input.isKeyPressed(Keys.D)) {
 					setEnergyX(250.0f);
 				}
 
 			}
 			// Up and down
-			if (Gdx.input.isKeyPressed(Keys.UP))
+			if (Gdx.input.isKeyPressed(Keys.UP)
+					|| Gdx.input.isKeyPressed(Keys.W)
+					|| Gdx.input.isKeyPressed(Keys.SPACE))
 				jump();
-			if (Gdx.input.isKeyPressed(Keys.DOWN))
+			if (Gdx.input.isKeyPressed(Keys.DOWN)
+					|| Gdx.input.isKeyPressed(Keys.S))
 				setCrouch(true);
 			else
 				setCrouch(false);
