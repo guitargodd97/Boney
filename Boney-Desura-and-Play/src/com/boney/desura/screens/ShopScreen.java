@@ -1,5 +1,7 @@
 package com.boney.desura.screens;
 
+import java.math.BigDecimal;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
@@ -244,12 +246,12 @@ public class ShopScreen implements Screen {
 
 		// Setup the money label
 		money = Integer.parseInt(c);
-		if (Integer.parseInt(c) % 100 == 0)
-			cash = new Label("Cash: $" + (Float.parseFloat(c) / 100) + "0", ls);
-		else if (Integer.parseInt(c) % 10 == 0)
-			cash = new Label("Cash: $" + (Float.parseFloat(c) / 100) + "0", ls);
+		if (money % 10 == 0 || money == 0)
+			cash = new Label("Cash: $"
+					+ (round((Double.parseDouble(c) / 100), 3) + "0"), ls);
 		else
-			cash = new Label("Cash: $" + (Float.parseFloat(c) / 100), ls);
+			cash = new Label("Cash: $"
+					+ (round((Double.parseDouble(c) / 100), 3)), ls);
 		cash.setPosition(0, 450);
 		cash.setAlignment(Align.center);
 
@@ -420,12 +422,12 @@ public class ShopScreen implements Screen {
 
 			// Update the label
 			money = Integer.parseInt(c);
-			if (money % 100 == 0)
-				cash.setText("Cash: $" + (Float.parseFloat(c) / 100) + ".00");
-			else if (Integer.parseInt(c) % 10 == 0)
-				cash.setText("Cash: $" + (Float.parseFloat(c) / 100) + "0");
+			if (money % 10 == 0 || money == 0)
+				cash.setText("Cash: $"
+						+ (round((Double.parseDouble(c) / 100), 3) + "0"));
 			else
-				cash.setText("Cash: $" + (Float.parseFloat(c) / 100));
+				cash.setText("Cash: $"
+						+ (round((Double.parseDouble(c) / 100), 3)));
 		} else {
 			// If the stat is maxed
 			switch (i) {
@@ -455,6 +457,16 @@ public class ShopScreen implements Screen {
 				break;
 			}
 		}
+	}
+
+	// Rounds money for cash
+	private double round(double value, int places) {
+		if (places < 0)
+			throw new IllegalArgumentException();
+
+		BigDecimal bd = new BigDecimal(value);
+		bd = bd.setScale(places, BigDecimal.ROUND_HALF_UP);
+		return bd.doubleValue();
 	}
 }
 // Hunter Heidenreich 2014
