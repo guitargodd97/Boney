@@ -249,7 +249,7 @@ public class ShopScreen implements Screen {
 		if (money % 10 == 0 || money == 0)
 			cash = new Label("Cash: $"
 					+ (round((Double.parseDouble(c) / 100), 3) + "0"), ls);
-		else
+		else 
 			cash = new Label("Cash: $"
 					+ (round((Double.parseDouble(c) / 100), 3)), ls);
 		cash.setPosition(0, 450);
