@@ -390,7 +390,8 @@ public class LevelScreen implements Screen {
 			// Draw shapes
 			render.begin(ShapeType.Filled);
 			for (int i = 0; i < boney.returnLives(); i++)
-				render.rect((25 * i) + 15, 25, 15, 15);
+				render.rect(Gdx.graphics.getWidth() - (25 * i) - 200, 25, 15,
+						15);
 			render.end();
 		}
 	}
@@ -678,4 +679,4 @@ public class LevelScreen implements Screen {
 		return null;
 	}
 }
-//Hunter Heidenreich 2014
+// Hunter Heidenreich 2014
