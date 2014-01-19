@@ -32,7 +32,7 @@ import com.boney.desura.screens.SplashScreen;
 //---------------------------------------------------------------------------------------------
 
 public class BoneyGame extends Game {
-	public static final boolean FREE = true;
+	public static final boolean FREE = false;
 	public static final String VERSION = "Ver. 1.1 Beta";
 	private static ApplicationType app;
 	private static AssetManager assetManager;

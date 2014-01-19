@@ -92,7 +92,8 @@ public class ModeScreen implements Screen {
 							vN = false;
 						else
 							vN = true;
-					}
+					} else
+						game.setScreen(new CustomizeScreen(game));
 				} else if (rect[2].contains(Gdx.input.getX(), Gdx.input.getY()))
 					game.setScreen(new SelectionScreen(game));
 				else if (rect[3].contains(Gdx.input.getX(), Gdx.input.getY()))
