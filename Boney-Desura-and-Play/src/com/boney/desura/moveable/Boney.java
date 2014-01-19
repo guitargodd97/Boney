@@ -35,6 +35,7 @@ public class Boney {
 	private boolean crouch;
 	private boolean jump;
 	private boolean poweruped;
+	private boolean invincible;
 	private FileHandle statLocation;
 	private FileHandle moneyLocation;
 	private float energyY;
@@ -82,6 +83,7 @@ public class Boney {
 		poweruped = false;
 		crouch = false;
 		jump = false;
+		invincible = false;
 
 		// Locations and Outfits
 		shape = new Vector2(64, 128);
@@ -248,10 +250,44 @@ public class Boney {
 				speed *= 2;
 				poweruped = true;
 				powerupcnt = 300 * powerupLength;
+				for (int i = 0; i < curIdle.length; i++) {
+					curIdle[i].setColor(.8f, .8f, 1f, 1f);
+					curCrouch[i].setColor(.8f, .8f, 1f, 1f);
+					curRunRight[i].setColor(.8f, .8f, 1f, 1f);
+					curRunLeft[i].setColor(.8f, .8f, 1f, 1f);
+					curJump[i].setColor(.8f, .8f, 1f, 1f);
+				}
+			}
+			break;
+		case (4):
+			if (!poweruped) {
+				invincible = true;
+				poweruped = true;
+				powerupcnt = 300 * powerupLength;
+				for (int i = 0; i < curIdle.length; i++) {
+					curIdle[i].setColor(.6f, .6f, .6f, 1f);
+					curCrouch[i].setColor(.6f, .6f, .6f, 1f);
+					curRunRight[i].setColor(.6f, .6f, .6f, 1f);
+					curRunLeft[i].setColor(.6f, .6f, .6f, 1f);
+					curJump[i].setColor(.6f, .6f, .6f, 1f);
+				}
+			}
+			break;
+		case (5):
+			if (!poweruped) {
+				cashMultiplier *= 2;
+				poweruped = true;
+				powerupcnt = 300 * powerupLength;
+				for (int i = 0; i < curIdle.length; i++) {
+					curIdle[i].setColor(.8f, 1f, .8f, 1f);
+					curCrouch[i].setColor(.8f, 1f, .8f, 1f);
+					curRunRight[i].setColor(.8f, 1f, .8f, 1f);
+					curRunLeft[i].setColor(.8f, 1f, .8f, 1f);
+					curJump[i].setColor(.8f, 1f, .8f, 1f);
+				}
 			}
 			break;
 		}
-
 	}
 
 	// Turns off effect
@@ -260,6 +296,20 @@ public class Boney {
 		case (3):
 			speed = (int) powerupInfo.y;
 			break;
+		case (4):
+			invincible = false;
+			break;
+		case (5):
+			cashMultiplier /= 2;
+			break;
+		}
+
+		for (int i = 0; i < curIdle.length; i++) {
+			curIdle[i].setColor(1f, 1f, 1f, 1f);
+			curCrouch[i].setColor(1f, 1f, 1f, 1f);
+			curRunRight[i].setColor(1f, 1f, 1f, 1f);
+			curRunLeft[i].setColor(1f, 1f, 1f, 1f);
+			curJump[i].setColor(1f, 1f, 1f, 1f);
 		}
 	}
 
@@ -413,7 +463,8 @@ public class Boney {
 
 	// Subtracts 1 from the current health
 	public void loseLive() {
-		curHealth--;
+		if (!invincible)
+			curHealth--;
 	}
 
 	// Returns whether Boney should still be alive or he should have gameover
